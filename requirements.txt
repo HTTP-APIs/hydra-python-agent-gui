@@ -1,13 +1,7 @@
-rdflib
-rdflib-jsonld
-uritemplate
-httplib2
-redis
-graphviz
-requests
-python-socketio
 flask
 jsons
 Flask-Cors
 -e git+https://github.com/RedisGraph/redisgraph-py#egg=redisgraph
 -e git+https://github.com/HTTP-APIs/hydra-python-core#egg=hydra_python_core
+-e git+https://github.com/HTTP-APIs/hydra-python-agent@develop#egg=hydra_agent
+
