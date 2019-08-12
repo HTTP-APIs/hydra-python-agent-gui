@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# build packages
+/src 
+
+# Graphviz generated graph
+hydra_graph.gv
