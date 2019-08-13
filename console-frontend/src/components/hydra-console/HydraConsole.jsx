@@ -92,12 +92,21 @@ const styles = theme => ({
 class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
+        var endpoints = null;
+        debugger
+        for(var index in this.props.hydraClasses){
+            if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
+              endpoints = this.props.hydraClasses[index].supportedProperty
+            }
+        }
+        debugger
         this.state = {
-            endpoints: this.props.endpoints,
+            hydraClasses: this.props.hydraClasses,
+            endpoints: endpoints,
             selectedEndpointIndex: 0,
             selectedOperationIndex: 0,
         };
-        debugger
+        
     }
 
     selectEndpoint(endpointIndex) {
@@ -162,7 +171,7 @@ class HydraConsole extends React.Component {
                     <EndpointsButtons
                         selectEndpoint={ (currProperty) => {
                             this.selectEndpoint(currProperty) }}
-                        endpoints={this.props.endpoints}>   
+                        endpoints={this.state.endpoints}>   
                     </EndpointsButtons>
                 </Grid>
                 <Grid

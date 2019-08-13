@@ -14,8 +14,7 @@ class AgentGUI extends React.Component {
     this.state = {
       consoleWidth: 6, //6 | 12 
       hidden: false, //false | true,
-      collections: null,
-    
+      classes: null,
     }
 
   }
@@ -26,15 +25,12 @@ class AgentGUI extends React.Component {
         var endpoints = null;
         var classes = null;
         debugger
-        for(var index in res.data.supportedClass){
-          if(res.data.supportedClass[index]['@id'] === 'vocab:EntryPoint'){
-            endpoints = res.data.supportedClass[index].supportedProperty
-          }
-        }
+
         this.setState({
           //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
-          endpoints: endpoints,
+          classes: res.data.supportedClass,
         })
+        debugger
         console.log(res);
       });
   }
@@ -55,7 +51,7 @@ class AgentGUI extends React.Component {
   }
 
   render() {
-    if(this.state.endpoints){
+    if(this.state.classes){
       return (
         <ThemeProvider theme={GuiTheme}>
           <NavBar 
@@ -77,7 +73,7 @@ class AgentGUI extends React.Component {
               <NavBar text="Agent Console" fontSize='1.3em'
                 backgroundColor={GuiTheme.palette.primary.dark}
               ></NavBar> 
-              <HydraConsole  endpoints={this.state.endpoints} color='primary' ></HydraConsole>
+              <HydraConsole  hydraClasses={this.state.classes} color='primary' ></HydraConsole>
             </Grid>
           </Grid>
         </ThemeProvider>
