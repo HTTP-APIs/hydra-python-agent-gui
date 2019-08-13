@@ -105,21 +105,18 @@ class HydraConsole extends React.Component {
             {selectedEndpointIndex: endpointIndex}
         )
     }
-    }
 
-    selectCollection(collectionName) {
+    selectOperation(operationIndex) {
         this.setState(
-            {selectedCollection: collectionName}, () => { console.log("done")}
-        )        
-        // this.setState(prevState => {
-        //     let collections = Object.assign({}, prevState.collections);  // creating copy of state variable jasper
-        //     collections[collectionName].class = 'collectionSelectedButton';                     // update the name property, assign a new value                 
-        //     return { collections };                                 // return new object jasper object
-        // })
+            {selectedOperationIndex: operationIndex}
+        )
     }
 
     render() {
         const { classes } = this.props;
+        const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
+        const selectedOperation = selectedEndpoint.property.supportedOperation[
+            this.state.selectedOperationIndex];
 
         var outputText = '{ \n \
                 "@id": "/serverapi/DroneCollection/eb37280c-2c65-4c85-a3dc-cfc10be91ac2", \n \
@@ -173,12 +170,12 @@ class HydraConsole extends React.Component {
                     direction="column"
                     justify="space-evenly"
                     alignItems="center">
-                    <Fab color="secondary" aria-label="add" className={classes.margin}>
-                        GET
-                    </Fab>
-                    <Fab aria-label="add" className={classes.margin}>
-                        POST
-                    </Fab>
+                    <OperationsButtons
+                        operations={selectedEndpoint.property.supportedOperation}
+                        selectOperation={ (currProperty) => {
+                            this.selectOperation(currProperty)
+                        }}> 
+                    </OperationsButtons>
                 </Grid>
                 <Grid
                     item md={6} xs={12} container
@@ -287,7 +284,8 @@ class HydraConsole extends React.Component {
                         onChange={() => { }}
                         margin="normal"
                         variant="outlined"
-                        value={"agent.get(\"" + this.state.selectedCollection + "\")"}
+                        value={"agent." + selectedOperation.method.toLowerCase() +
+                               "(\"" + selectedEndpoint.property.label + "\")"}
                     />
                     <Button variant="contained" color="secondary"
                             className={classes.sendRequest}> 
