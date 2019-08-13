@@ -34,7 +34,7 @@ def start_agent():
 @app.route("/hydra-doc", methods=['GET'])
 def hydra_doc():
     apidoc = agent.fetch_apidoc()
-    return jsons.dump(apidoc)
+    return json.dumps(apidoc.generate())
 
 # Send Formatted ApiDoc Graph to Frontend
 @app.route("/apidoc-graph", methods=['POST'])
