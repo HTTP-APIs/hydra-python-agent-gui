@@ -9,7 +9,8 @@ import { withStyles } from '@material-ui/styles';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import CollectionButtons from './collection-buttons/CollectionButtons'
+import EndpointsButtons from './endpoints-buttons/EndpointsButtons'
+import OperationsButtons from './operations-buttons/OperationsButtons'
 
 const CssTextField = withStyles({
     root: {
@@ -73,12 +74,6 @@ const styles = theme => ({
         border: '2px solid Gray',
         borderRadius: '6px',
     },
-    // textFieldContainer: {
-    //     width: '90%',
-    //     padding: '0px 5px 0px 5px',
-    //     backgroundColor: '#fff',
-    //     color: '#fff'
-    // },
     textField: {
         width: '68%',
         marginRight: '1%',
@@ -92,26 +87,24 @@ const styles = theme => ({
         height: 48,
         width: '22%',
     },
-    collectionButton: {
-        width: '80%',
-    },
-    collectionSelectedButton: {
-        
-    }
 });
 
 class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            collections: this.props.collections,
-            selectedCollection: 'DroneCollection',
+            endpoints: this.props.endpoints,
+            selectedEndpointIndex: 0,
+            selectedOperationIndex: 0,
         };
+        debugger
+    }
 
-        for (var currProperty in this.state.collections) {
-            this.state.collections[currProperty].class = 'collectionButton'
-        }
+    selectEndpoint(endpointIndex) {
+        this.setState(
+            {selectedEndpointIndex: endpointIndex}
+        )
+    }
     }
 
     selectCollection(collectionName) {
@@ -169,9 +162,11 @@ class HydraConsole extends React.Component {
                     direction="column"
                     justify="space-evenly"
                     alignItems="center">
-
-                    <CollectionButtons selectCollection={ (currProperty) => this.selectCollection(currProperty) } collections={this.props.collections}> </CollectionButtons>
-
+                    <EndpointsButtons
+                        selectEndpoint={ (currProperty) => {
+                            this.selectEndpoint(currProperty) }}
+                        endpoints={this.props.endpoints}>   
+                    </EndpointsButtons>
                 </Grid>
                 <Grid
                     item md={2} xs={12} container

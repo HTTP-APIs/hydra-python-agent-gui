@@ -23,8 +23,17 @@ class AgentGUI extends React.Component {
   componentDidMount() {
     axios.get('http://localhost:5000/hydra-doc')
       .then(res => {
+        var endpoints = null;
+        var classes = null;
+        debugger
+        for(var index in res.data.supportedClass){
+          if(res.data.supportedClass[index]['@id'] === 'vocab:EntryPoint'){
+            endpoints = res.data.supportedClass[index].supportedProperty
+          }
+        }
         this.setState({
-          collections: res.data.collections,
+          //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
+          endpoints: endpoints,
         })
         console.log(res);
       });
@@ -46,7 +55,7 @@ class AgentGUI extends React.Component {
   }
 
   render() {
-    if(this.state.collections){
+    if(this.state.endpoints){
       return (
         <ThemeProvider theme={GuiTheme}>
           <NavBar 
@@ -68,7 +77,7 @@ class AgentGUI extends React.Component {
               <NavBar text="Agent Console" fontSize='1.3em'
                 backgroundColor={GuiTheme.palette.primary.dark}
               ></NavBar> 
-              <HydraConsole  collections={this.state.collections} color='primary' ></HydraConsole>
+              <HydraConsole  endpoints={this.state.endpoints} color='primary' ></HydraConsole>
             </Grid>
           </Grid>
         </ThemeProvider>
