@@ -33,15 +33,14 @@ class OperationsButtons extends React.Component {
             buttons: updatedButtons,
             selectedButton: clickedButton
         })
-         
     }
 
     generateButtons(){
-        const collectionsArray = Object.keys(this.props.operations);
+        const operationsArray = Object.keys(this.props.operations);
         
         const { classes } = this.props;
 
-        var buttons = collectionsArray.map( (currProperty, index) => {
+        var buttons = operationsArray.map( (currProperty, index) => {
             const operation = this.props.operations[currProperty].method 
             return(<Fab
                 key={currProperty}
@@ -53,8 +52,19 @@ class OperationsButtons extends React.Component {
         return buttons;
     }
 
+    componentDidUpdate(){
+        if(this.state.selectedButton !== this.props.selectedOperationIndex){
+            var updatedButtons = this.state.buttons.slice();
+            updatedButtons[this.state.selectedButton] = false;
+            updatedButtons[this.props.selectedOperationIndex] = true;
+            this.setState({
+                buttons: updatedButtons,
+                selectedButton: this.props.selectedOperationIndex
+            })
+        }
+    }
+
     render() {
-        
         return this.generateButtons()
     }
 }
