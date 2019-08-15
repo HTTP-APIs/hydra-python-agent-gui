@@ -24,13 +24,11 @@ class AgentGUI extends React.Component {
       .then(res => {
         var endpoints = null;
         var classes = null;
-        debugger
 
         this.setState({
           //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
           classes: res.data.supportedClass,
         })
-        debugger
         console.log(res);
       });
   }

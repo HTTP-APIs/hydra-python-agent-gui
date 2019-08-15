@@ -197,81 +197,11 @@ class HydraConsole extends React.Component {
                         justify="flex-start"
                         alignItems="center">
                         <label> {"{"} </label>
-                        <Grid
-                            className={classes.propertyContainer}
-                            container
-                            direction="row"
-                            justify="flex-start"
-                            alignItems="center">
-                            <label className={classes.propertyInput}>label: </label>
-                            <Input
-                                placeholder=" default value"
-                                className={classes.input}
-                                inputProps={{
-                                    'aria-label': 'description',
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            className={classes.propertyContainer}
-                            container
-                            direction="row"
-                            justify="flex-start"
-                            alignItems="center">
-                            <label className={classes.propertyInput}>label: </label>
-                            <Input
-                                placeholder=" default value"
-                                className={classes.input}
-                                inputProps={{
-                                    'aria-label': 'description',
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            className={classes.propertyContainer}
-                            container
-                            direction="row"
-                            justify="flex-start"
-                            alignItems="center">
-                            <label className={classes.propertyInput}>label: </label>
-                            <Input
-                                placeholder=" default value"
-                                className={classes.input}
-                                inputProps={{
-                                    'aria-label': 'description',
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            className={classes.propertyContainer}
-                            container
-                            direction="row"
-                            justify="flex-start"
-                            alignItems="center">
-                            <label className={classes.propertyInput}>label: </label>
-                            <Input
-                                placeholder=" default value"
-                                className={classes.input}
-                                inputProps={{
-                                    'aria-label': 'description',
-                                }}
-                            />
-                        </Grid>
-                        <Grid
-                            className={classes.propertyContainer}
-                            container
-                            direction="row"
-                            justify="flex-start"
-                            alignItems="center">
-                            <label className={classes.propertyInput}>label: </label>
-                            <Input
-                                placeholder=" default value"
-                                className={classes.input}
-                                inputProps={{
-                                    'aria-label': 'description',
-                                }}
-                            />
-                        </Grid>
+                        <PropertiesEditor
+                            properties={this.state.properties[temporaryEndpoint]}
+                            hydraClass={this.state.hydraClasses[selectedEndpoint.property.range]}
+                            onChange={ (updatedField) => {this.handleChange(updatedField) }}>
+                        </PropertiesEditor>
                         <label> {"}"} </label>
                     </Grid>
                 </Grid>
