@@ -20,23 +20,6 @@ const styles = theme => ({
 });
 
 class PropertiesEditor extends React.Component {
-    constructor(props) {
-        super(props);
-        this.classesProperties = [];
-        this.filledProperties = [];
-    }
-    
-    selectButton(clickedButton){
-        var updatedButtons = this.state.buttons.slice();
-        updatedButtons[this.state.selectedButton] = false;
-        updatedButtons[clickedButton] = true;
-        this.setState({
-            buttons: updatedButtons,
-            selectedButton: clickedButton
-        })
-         
-    }
-
     generateField(propertyName, placeholder = null){
         const { classes } = this.props;
         //this.filledProperties[fieldName];
