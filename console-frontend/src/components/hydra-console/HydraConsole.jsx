@@ -11,6 +11,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import EndpointsButtons from './endpoints-buttons/EndpointsButtons'
 import OperationsButtons from './operations-buttons/OperationsButtons'
+import PropertiesEditor from './properties-editor/PropertiesEditor'
 
 const CssTextField = withStyles({
     root: {
@@ -93,20 +94,37 @@ class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
         var endpoints = null;
-        debugger
+        var classesMapping = []
+
+        // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
         for(var index in this.props.hydraClasses){
+            classesMapping[this.props.hydraClasses[index]['@id']] = this.props.hydraClasses[index];
             if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
             }
         }
-        debugger
+
+        // Initializing empty array with all properties in the ApiDoc
+        var classesProperties = {}
+        for( var auxClass in classesMapping){
+            classesProperties[classesMapping[auxClass]['@id']] = []
+            for( var auxProperty in  classesMapping[auxClass].supportedProperty ) {
+                classesProperties[classesMapping[auxClass]['@id']][
+                    classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
+            }
+        }
         this.state = {
-            hydraClasses: this.props.hydraClasses,
+            hydraClasses: classesMapping,
             endpoints: endpoints,
+            properties: classesProperties,
             selectedEndpointIndex: 0,
             selectedOperationIndex: 0,
-        };
+        };      
         
+        this.temporaryEndpoint = null;
+    }
+
+    componentDidMount() {
     }
 
     selectEndpoint(endpointIndex) {
@@ -121,11 +139,24 @@ class HydraConsole extends React.Component {
         )
     }
 
+    handleChange(e){
+        let auxProperties = Object.assign({}, this.state.properties);
+        auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
+        this.setState({
+            properties: auxProperties
+        })
+    }
+
     render() {
         const { classes } = this.props;
         const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
+        
         const selectedOperation = selectedEndpoint.property.supportedOperation[
             this.state.selectedOperationIndex];
+        
+        // TEMPORARY FIX for not having range in members
+        const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
+        this.temporaryEndpoint = temporaryEndpoint;
 
         var outputText = '{ \n \
                 "@id": "/serverapi/DroneCollection/eb37280c-2c65-4c85-a3dc-cfc10be91ac2", \n \
