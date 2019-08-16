@@ -12,7 +12,7 @@ class OperationsButtons extends React.Component {
         super(props);
         var buttons = []
         
-        Object.keys(this.props.operations).map( (operation) => {
+        Object.keys(this.props.operations).forEach( (operation) => {
             buttons[operation] = false
         })
 

@@ -16,7 +16,7 @@ class EndpointsButtons extends React.Component {
         super(props);
         var buttons = []
 
-        Object.keys(this.props.endpoints).map( (endpoint) => {
+        Object.keys(this.props.endpoints).forEach( (endpoint) => {
             buttons[endpoint] = false
         })
 

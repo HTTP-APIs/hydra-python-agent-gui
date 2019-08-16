@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../../assets/images/logo.svg';
-import GuiTheme from '../../app/gui-theme'
+// eslint-disable-next-line
 
 class HydraGraph extends React.Component {
    render() {
