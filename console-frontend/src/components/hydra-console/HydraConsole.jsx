@@ -143,6 +143,9 @@ class HydraConsole extends React.Component {
     }
 
     handleChange(e){
+        // Boolean variable that says we will fetch by resource type
+        this.getURL = false;
+
         let auxProperties = Object.assign({}, this.state.properties);
         auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
         this.setState({
@@ -150,7 +153,118 @@ class HydraConsole extends React.Component {
         })
     }
 
+    handleChangeResourceID(e){
+        // Fetch will work by URL
+        this.getURL = true;
+
+        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
+        this.setState({
+            resourcesIDs: resourcesIDs
+        })
+
+        //debugger
+        //this.resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
+    }
+
     sendCommand(){
+        const properties = this.state.properties[this.temporaryEndpoint];
+        var filteredProperties = {}
+        for(var property in properties){
+            if(properties[property] !== ""){
+                filteredProperties[property] = properties[property];
+            }
+        }
+
+        const resourceType = this.selectedEndpoint.property.label.replace("Collection", "")
+
+        if(this.selectedOperation.method.toLowerCase() === 'get'){
+            var getBody = null
+            if(this.getURL){
+                getBody = {
+                    method: 'get',
+                    url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" + this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID']
+                }
+            }else{    
+                getBody = {
+                    method: 'get',
+                    resource_type: resourceType,
+                    filters: filteredProperties,
+                }
+            }
+            axios.post('http://localhost:5000/send-command', getBody)
+              .then( (response) =>  {
+                this.setState({
+                    outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+                })
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+              return;
+        }
+        else if(this.selectedOperation.method.toLowerCase() === 'put'){
+            var putBody = null;
+            putBody = {
+                method: 'put',
+                url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
+                     this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID'],
+                new_object: filteredProperties,
+            }
+            filteredProperties['@type'] = resourceType;
+            //debugger
+            axios.post('http://localhost:5000/send-command', putBody)
+            .then( (response) =>  {
+              this.setState({
+                  outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+              })
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+            return
+        }
+        else if(this.selectedOperation.method.toLowerCase() === 'post'){
+            var postBody = null;
+            postBody = {
+                method: 'post',
+                url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
+                     this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID'],
+                updated_object: filteredProperties,
+            }
+            filteredProperties['@type'] = resourceType;
+            axios.post('http://localhost:5000/send-command', postBody)
+            .then( (response) =>  {
+              this.setState({
+                  outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+              })
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+            return
+        }else if(this.selectedOperation.method.toLowerCase() === 'delete'){
+            var deleteBody = null;
+            deleteBody = {
+                method: 'delete',
+                url: this.props.serverUrl + this.selectedEndpoint.property.label +
+                     "/" + this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID'],
+            }
+            axios.post('http://localhost:5000/send-command', deleteBody)
+            .then( (response) =>  {
+              this.setState({
+                  outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+              })
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+            return
+        }
+        // this.props.serverUrl  url
+
+        // this.resourcesIDs[this.temporaryEndpoint]['ResourceID']
+
         axios.post('http://localhost:5000/send-command', {
             method: this.selectedOperation.method.toLowerCase(),
             resource_type: this.selectedEndpoint.property.label,
@@ -158,6 +272,9 @@ class HydraConsole extends React.Component {
             //url: 'Flintstone',
           })
           .then(function (response) {
+                this.setState({
+                    outputText: response,
+                })
             console.log(response);
           })
           .catch(function (error) {
@@ -261,10 +378,32 @@ class HydraConsole extends React.Component {
                         justify="flex-start"
                         alignItems="center">
                         <label> {"{"} </label>
+                        <Grid
+                            className={classes.propertyContainer}
+                            container
+                            direction="row"
+                            justify="flex-start"
+                            alignItems="center">
+                            <label className={classes.propertyInput}> 
+                                ResourceID:
+                            </label>
+                            <Input
+                                placeholder="Object ID"
+                                name={temporaryEndpoint}
+                                value={ this.state.resourcesIDs[temporaryEndpoint]['ResourceID'] }
+                                onChange={ (e) => this.handleChangeResourceID(e) }
+                                onFocus={ (e) => this.handleChangeResourceID(e) }
+                                className={classes.input}
+                                inputProps={{
+                                    'aria-label': 'description',
+                                }}
+                            />
+                        </Grid>
+                        {this.selectedOperation.method !== "DELETE" &&
                         <PropertiesEditor
                             properties={this.state.properties[temporaryEndpoint]}
                             onChange={ (updatedField) => {this.handleChange(updatedField) }}>
-                        </PropertiesEditor>
+                        </PropertiesEditor>}
                         <label> {"}"} </label>
                     </Grid>
                 </Grid>
@@ -286,12 +425,11 @@ class HydraConsole extends React.Component {
                         onChange={() => { }}
                         margin="normal"
                         variant="outlined"
-                        value={"agent." + selectedOperation.method.toLowerCase() +
-                               "(\"" + selectedEndpoint.property.label + "\", "  +
-                               stringProps + ")"}
+                        value={rawCommand}
                     />
                     <Button variant="contained" color="secondary"
-                            className={classes.sendRequest}> 
+                            className={classes.sendRequest}
+                            onClick={() => this.sendCommand()}> 
                         Send Request
                     </Button>
                 </Grid>
