@@ -1,6 +1,5 @@
 import React from 'react'
 import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
@@ -107,8 +106,12 @@ class HydraConsole extends React.Component {
 
         // Initializing empty array with all properties in the ApiDoc
         var classesProperties = {}
+        var resourcesIDs = {}
         for( var auxClass in classesMapping){
             classesProperties[classesMapping[auxClass]['@id']] = {}
+            // Creating the array that will maintain the Resources IDs
+            resourcesIDs[classesMapping[auxClass]['@id']] = {}
+            resourcesIDs[classesMapping[auxClass]['@id']]['ResourceID'] = "" 
             for( var auxProperty in  classesMapping[auxClass].supportedProperty ) {
                 classesProperties[classesMapping[auxClass]['@id']][
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
@@ -118,13 +121,16 @@ class HydraConsole extends React.Component {
             hydraClasses: classesMapping,
             endpoints: endpoints,
             properties: classesProperties,
+            resourcesIDs: resourcesIDs,
             selectedEndpointIndex: 0,
             selectedOperationIndex: 0,
+            outputText: " Your request output will be displayed here..."
         };      
-        
         this.temporaryEndpoint = null;
         this.selectedEndpoint = null;
         this.selectedOperation = null;
+
+        this.getURL = true;
     }
 
     componentDidMount() {
@@ -132,7 +138,8 @@ class HydraConsole extends React.Component {
 
     selectEndpoint(endpointIndex) {
         this.setState(
-            {selectedEndpointIndex: endpointIndex}
+            {selectedEndpointIndex: endpointIndex,
+            selectedOperationIndex: 0}
         )
     }
 
@@ -292,57 +299,33 @@ class HydraConsole extends React.Component {
         return value;
       }
       
-
     render() {
         const { classes } = this.props;
-
         const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
         this.selectedEndpoint = selectedEndpoint;
 
-        const selectedOperation = selectedEndpoint.property.supportedOperation[
-            this.state.selectedOperationIndex];
-        this.selectedOperation = selectedOperation;
-
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
+        
+        var selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
+        const selectedOperation = selectedHydraClass.supportedOperation[
+            this.state.selectedOperationIndex];
+        this.selectedOperation = selectedOperation;
+        
         var stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
         
-        var outputText = '{ \n \
-                "@id": "/serverapi/DroneCollection/eb37280c-2c65-4c85-a3dc-cfc10be91ac2", \n \
-                "@type": "Drone" \n \
-            }, \n \
-            { \n \
-                "@id": "/serverapi/DroneCollection/c22d925c-6626-426e-b94c-b6348d1c728f", \n \
-                "@type": "Drone" \n \
-            }, \n \
-            { \n \
-                "@id": "/serverapi/DroneCollection/c22d925c-6626-426e-b94c-b6348d1c728f", \n \
-                "@type": "Drone" \n \
-            }, \n \
-            { \n \
-                "@id": "/serverapi/DroneCollection/c22d925c-6626-426e-b94c-b6348d1c728f", \n \
-                "@type": "Drone" \n \
-            }, \n \
-            { \n \
-                "@id": "/serverapi/DroneCollection/c22d925c-6626-426e-b94c-b6348d1c728f", \n \
-                "@type": "Drone" \n \
-            }, \n \
-            { \n \
-                "@id": "/serverapi/DroneCollection/c22d925c-6626-426e-b94c-b6348d1c728f", \n \
-                "@type": "Drone" \n \
-            }, \n \
-            { \n \
-                "@id": "/serverapi/DroneCollection/15ba987b-ddd6-4084-af52-7167fb1fc8ab", \n \
-                "@type": "Drone" \n \
-            }, \n \
-        { \n \
-                "@id": "/serverapi/DroneCollection/15ba987b-ddd6-4084-af52-7167fb1fc8ab", \n \
-                "@type": "Drone" \n \
-            }, \n \
-        { \n \
-                "@id": "/serverapi/DroneCollection/15ba987b-ddd6-4084-af52-7167fb1fc8ab", '
-
+        var rawCommand = "";
+        if(this.getURL){
+            rawCommand = "agent." + this.selectedOperation.method.toLowerCase() +
+                         "(\"" + this.props.serverUrl +
+                         this.selectedEndpoint.property.label + "/" +
+                         this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID'] + "\")"
+        }else{
+            rawCommand = "agent." + this.selectedOperation.method.toLowerCase() +
+                               "(\"/" + selectedEndpoint.property.label + "\", "  +
+                               stringProps + ")"
+        }
         return (
             <Grid container className={classes.outContainer}>
                 <Grid item md={4} xs={12} container
@@ -361,7 +344,8 @@ class HydraConsole extends React.Component {
                     justify="space-evenly"
                     alignItems="center">
                     <OperationsButtons
-                        operations={selectedEndpoint.property.supportedOperation}
+                        operations={selectedHydraClass.supportedOperation}
+                        selectedOperationIndex={this.state.selectedOperationIndex}
                         selectOperation={ (currProperty) => {
                             this.selectOperation(currProperty)
                         }}> 
@@ -441,7 +425,7 @@ class HydraConsole extends React.Component {
                     <span className={classes.outputContainerHeader} > Output</span>
                     <div className={classes.outputContainer}>
                         <Scrollbars>
-                            {outputText}
+                            {this.state.outputText}
                         </Scrollbars>
                     </div>
                 </Grid>
