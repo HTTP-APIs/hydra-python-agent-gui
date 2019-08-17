@@ -6,6 +6,7 @@ import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
 import GuiTheme from '../../app/gui-theme';
 import { withStyles } from '@material-ui/styles';
+import axios from 'axios';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 
@@ -122,6 +123,8 @@ class HydraConsole extends React.Component {
         };      
         
         this.temporaryEndpoint = null;
+        this.selectedEndpoint = null;
+        this.selectedOperation = null;
     }
 
     componentDidMount() {
@@ -147,17 +150,46 @@ class HydraConsole extends React.Component {
         })
     }
 
+    sendCommand(){
+        axios.post('http://localhost:5000/send-command', {
+            method: this.selectedOperation.method.toLowerCase(),
+            resource_type: this.selectedEndpoint.property.label,
+            filters: this.state.properties[this.temporaryEndpoint],
+            //url: 'Flintstone',
+          })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        
+        //this.outputText 
+    }
+
+    jsonStringifyReplacer(key, value) {
+        // Filtering out properties
+        if (value === "") {
+          return undefined;
+        }
+        return value;
+      }
+      
+
     render() {
         const { classes } = this.props;
+
         const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
-        
+        this.selectedEndpoint = selectedEndpoint;
+
         const selectedOperation = selectedEndpoint.property.supportedOperation[
             this.state.selectedOperationIndex];
-        
-        // TEMPORARY FIX for not having range in members
+        this.selectedOperation = selectedOperation;
+
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
 
+        var stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
         
         var outputText = '{ \n \
                 "@id": "/serverapi/DroneCollection/eb37280c-2c65-4c85-a3dc-cfc10be91ac2", \n \
