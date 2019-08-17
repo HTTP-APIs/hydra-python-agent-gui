@@ -148,14 +148,13 @@ def send_command():
     if body['method'] == "get":
         # Get optional parameters
         filters = body.get('filters', None)
-        cached_limit = body.get('cached_limit', None)
-
-        if 'resource_type' in body:
-            return agent.get(resource_type=body['resource_type'],
-                             filters=filters, cached_limit=cached_limit)
-        elif 'url' in body:
-            return agent.get(url=body['url'], filters=filters,
-                             cached_limit=cached_limit)
+        cached_limit = body.get('cached_limit', 100000000)
+        if 'url' in body:
+            return json.dumps(agent.get(url=body['url'], filters=filters,
+                              cached_limit=cached_limit))
+        elif 'resource_type' in body:
+            return json.dumps(agent.get(resource_type=body['resource_type'],
+                              filters=filters, cached_limit=cached_limit))
         else:
             return "Must contain url or the resource type"
     elif body['method'] == "put":
@@ -167,7 +166,7 @@ def send_command():
             new_object = body["new_object"]
         else:
             return "Put request must contain the new_object."
-        return agent.put(url, new_object)
+        return json.dumps(agent.put(url, new_object))
     elif body['method'] == "post":
         if "url" in body:
             url = body['url']
@@ -177,13 +176,13 @@ def send_command():
             updated_object = body["updated_object"]
         else:
             return "Put request must contain the updated_object."
-        return agent.post(url, updated_object)
+        return json.dumps(agent.post(url, updated_object))
     elif body['method'] == "delete":
         if "url" in body:
             url = body['url']
         else:
             return "Delete request must contain a url"
-        return agent.delete(url)
+        return json.dumps(agent.delete(url))
     else:
         return "Method not supported."
 
