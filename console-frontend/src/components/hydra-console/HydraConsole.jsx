@@ -107,7 +107,7 @@ class HydraConsole extends React.Component {
         // Initializing empty array with all properties in the ApiDoc
         var classesProperties = {}
         for( var auxClass in classesMapping){
-            classesProperties[classesMapping[auxClass]['@id']] = []
+            classesProperties[classesMapping[auxClass]['@id']] = {}
             for( var auxProperty in  classesMapping[auxClass].supportedProperty ) {
                 classesProperties[classesMapping[auxClass]['@id']][
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
@@ -158,6 +158,7 @@ class HydraConsole extends React.Component {
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
 
+        
         var outputText = '{ \n \
                 "@id": "/serverapi/DroneCollection/eb37280c-2c65-4c85-a3dc-cfc10be91ac2", \n \
                 "@type": "Drone" \n \
@@ -230,7 +231,6 @@ class HydraConsole extends React.Component {
                         <label> {"{"} </label>
                         <PropertiesEditor
                             properties={this.state.properties[temporaryEndpoint]}
-                            hydraClass={this.state.hydraClasses[selectedEndpoint.property.range]}
                             onChange={ (updatedField) => {this.handleChange(updatedField) }}>
                         </PropertiesEditor>
                         <label> {"}"} </label>
@@ -255,7 +255,8 @@ class HydraConsole extends React.Component {
                         margin="normal"
                         variant="outlined"
                         value={"agent." + selectedOperation.method.toLowerCase() +
-                               "(\"" + selectedEndpoint.property.label + "\")"}
+                               "(\"" + selectedEndpoint.property.label + "\", "  +
+                               stringProps + ")"}
                     />
                     <Button variant="contained" color="secondary"
                             className={classes.sendRequest}> 
