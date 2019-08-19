@@ -70,9 +70,36 @@ class AgentGUI extends React.Component {
       })
     }
   }
+  handleChangeServerURL(e){
+    debugger
+    this.setState({
+      serverURL: e.target.value,
+    })
+  }
+
+  submitServerURL(e){
+    debugger
+    axios.post(this.agentEndpoint + "/start-agent" , {url: this.state.serverURL})
+    .then( (successUpdate) => {
+      axios.get(this.agentEndpoint + "/hydra-doc")
+      .then(res => {
+        this.setState({
+          classes: res.data.supportedClass,
+        }, () => window.location.reload() )
+        .catch( (error) => {
+          console.log(error)
+        })
+      });
+    })
+    .catch( (error) => {
+      console.log(error)
+    })
+  }
 
   render() {
-    if(this.state.classes){
+    const { classes } = this.props;
+
+    if(this.state.classes && this.state.apidocGraph.nodes ){
       return (
         <ThemeProvider theme={GuiTheme}>
           <NavBar 
