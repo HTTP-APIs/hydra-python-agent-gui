@@ -10,7 +10,8 @@ app = Flask(__name__, static_folder='console-frontend/build/')
 CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 
 # Remove to deploy
-agent = Agent("http://localhost:8080/serverapi")
+url = "http://localhost:8080/serverapi"
+agent = Agent(url)
 
 # Serve React App
 @app.route('/', defaults={'path': ''})
@@ -23,18 +24,23 @@ def serve(path):
 
 # Receive URL and start the Agent
 @app.route("/start-agent", methods=['POST'])
-def start_agent():    
+def start_agent():
+    global agent
+    global  url
     body = request.get_data()
     body = body.decode('utf8').replace("'", '"')
     body = json.loads(body)
-    agent = Agent(body['url'])
+    url = body['url']
+    agent = Agent(url)
     return "Server started successfully"
 
 # Serve Hydra Doc
 @app.route("/hydra-doc", methods=['GET'])
 def hydra_doc():
     apidoc = agent.fetch_apidoc()
-    return apidoc.generate()
+    generatedApiDoc = apidoc.generate()
+    generatedApiDoc['serverURL'] = url
+    return generatedApiDoc
 
 # Send Formatted ApiDoc Graph to Frontend
 @app.route("/apidoc-graph", methods=['GET'])
