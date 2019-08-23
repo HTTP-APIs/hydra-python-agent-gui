@@ -60,6 +60,9 @@ const styles = theme => ({
         marginLeft: '10px',
         marginRight: '6px',
     },
+    input: {
+        flex: '100',
+    },
     outputContainer: {
         height: '40vh',
         width: '90%',
@@ -95,7 +98,8 @@ class HydraConsole extends React.Component {
         super(props);
         var endpoints = null;
         var classesMapping = []
-
+        this.agentEndpoint = ""
+        
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
         for(var index in this.props.hydraClasses){
             classesMapping[this.props.hydraClasses[index]['@id']] = this.props.hydraClasses[index];
@@ -199,7 +203,7 @@ class HydraConsole extends React.Component {
                     filters: filteredProperties,
                 }
             }
-            axios.post('http://localhost:5000/send-command', getBody)
+            axios.post(this.agentEndpoint + '/send-command', getBody)
               .then( (response) =>  {
                 this.setState({
                     outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
@@ -220,7 +224,7 @@ class HydraConsole extends React.Component {
             }
             filteredProperties['@type'] = resourceType;
             //debugger
-            axios.post('http://localhost:5000/send-command', putBody)
+            axios.post(this.agentEndpoint + '/send-command', putBody)
             .then( (response) =>  {
               this.setState({
                   outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
@@ -240,7 +244,7 @@ class HydraConsole extends React.Component {
                 updated_object: filteredProperties,
             }
             filteredProperties['@type'] = resourceType;
-            axios.post('http://localhost:5000/send-command', postBody)
+            axios.post(this.agentEndpoint + '/send-command', postBody)
             .then( (response) =>  {
               this.setState({
                   outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
@@ -257,7 +261,7 @@ class HydraConsole extends React.Component {
                 url: this.props.serverUrl + this.selectedEndpoint.property.label +
                      "/" + this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID'],
             }
-            axios.post('http://localhost:5000/send-command', deleteBody)
+            axios.post(this.agentEndpoint + '/send-command', deleteBody)
             .then( (response) =>  {
               this.setState({
                   outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
@@ -272,7 +276,7 @@ class HydraConsole extends React.Component {
 
         // this.resourcesIDs[this.temporaryEndpoint]['ResourceID']
 
-        axios.post('http://localhost:5000/send-command', {
+        axios.post(this.agentEndpoint + '/send-command', {
             method: this.selectedOperation.method.toLowerCase(),
             resource_type: this.selectedEndpoint.property.label,
             filters: this.state.properties[this.temporaryEndpoint],
@@ -372,7 +376,6 @@ class HydraConsole extends React.Component {
                                 ResourceID:
                             </label>
                             <Input
-                                placeholder="Object ID"
                                 name={temporaryEndpoint}
                                 value={ this.state.resourcesIDs[temporaryEndpoint]['ResourceID'] }
                                 onChange={ (e) => this.handleChangeResourceID(e) }

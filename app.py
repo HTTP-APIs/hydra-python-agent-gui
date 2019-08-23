@@ -1,6 +1,7 @@
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from hydra_agent.agent import Agent
+import sys
 import json, os
 from requests import get
 
@@ -153,8 +154,8 @@ def send_command():
         return "Request must have a method."
     if body['method'] == "get":
         # Get optional parameters
-        filters = body.get('filters', None)
-        cached_limit = body.get('cached_limit', 100000000)
+        filters = body.get('filters', {})
+        cached_limit = body.get('cached_limit', sys.maxsize)
         if 'url' in body:
             return json.dumps(agent.get(url=body['url'], filters=filters,
                               cached_limit=cached_limit))
@@ -194,4 +195,4 @@ def send_command():
 
 
 if __name__ == '__main__':
-    app.run(use_reloader=True, port=5000, threaded=True)
+    app.run(use_reloader=True, port=3000, threaded=True)
