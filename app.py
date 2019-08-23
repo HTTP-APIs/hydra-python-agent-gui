@@ -7,25 +7,30 @@ from requests import get
 
 app = Flask(__name__, static_folder='console-frontend/build/')
 
-#Setting CORS so it allows requests from our React app in localhost:3000
+# Setting CORS so it allows requests from our React app in localhost:3000
 CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 
 # Remove to deploy
 url = "http://localhost:8080/serverapi"
 agent = Agent(url)
 
-# Serve React App
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
+    """Default endpoint, it serves the built static React App
+    :return: Served file
+    """
     if path != "" and os.path.exists(app.static_folder + path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
 
-# Receive URL and start the Agent
 @app.route("/start-agent", methods=['POST'])
 def start_agent():
+    """Receive hydrus server URL and start the Agent
+    :param body['url']: Entrypoint URL for the hydrus server
+    :return: Success message
+    """
     global agent
     global  url
     body = request.get_data()
@@ -35,17 +40,21 @@ def start_agent():
     agent = Agent(url)
     return "Server started successfully"
 
-# Serve Hydra Doc
 @app.route("/hydra-doc", methods=['GET'])
 def hydra_doc():
+    """Serve Hydra Doc
+    :return: Hydra Doc loaded on the agent with url for current connected 
+    """
     apidoc = agent.fetch_apidoc()
     generatedApiDoc = apidoc.generate()
     generatedApiDoc['serverURL'] = url
     return generatedApiDoc
-
-# Send Formatted ApiDoc Graph to Frontend
+ 
 @app.route("/apidoc-graph", methods=['GET'])
 def apidoc_graph():
+    """Sends Formatted ApiDoc Graph in Vis.js network format to Frontend
+    :return: Dict containing Nodes and Edges
+    """
     global agent
     if agent is None:
         return "No agent connected."
@@ -53,9 +62,6 @@ def apidoc_graph():
     nodes = [{"id": 1, "shape": 'hexagon', "size": 15, "label": 'Entrypoint'}]
     edges = list()
     id = 1
-            #
-            # {id: 2, shape: 'box', font: {size: 12}, label: 'Drone Collection'},
-            # {id: 3, shape: 'box', font: {size: 12}, size: 10, label: 'State Collection'}]
     api_doc = agent.fetch_apidoc()
     for resource_endpoint in api_doc.entrypoint.entrypoint.supportedProperty:
         id+=1
@@ -111,9 +117,6 @@ def apidoc_graph():
                     nodes.append(property_node)
                     property_edge = create_edge(class_id, id, "supportedProp")
                     edges.append(property_edge)
-
-
-    # This is not really working, just created a crude representation to demo the functionality
     graph = {
         "nodes": nodes,
         "edges": edges
@@ -122,6 +125,9 @@ def apidoc_graph():
 
 
 def create_node(id, shape, size, label):
+    """Auxiliary function that creates a Node in Vis.js format
+    :return: Dict with Node attributes
+    """
     node = {
         "id": id,
         "shape": shape,
@@ -132,6 +138,9 @@ def create_node(id, shape, size, label):
 
 
 def create_edge(from_, to, label=None):
+    """Auxiliary function that creates a Edge in Vis.js format
+    :return: Dict with Edge attributes
+    """
     edge = {
         "from": from_,
         "to": to
@@ -140,10 +149,13 @@ def create_edge(from_, to, label=None):
         edge["label"] = label
     return edge
 
-
-# Send Command to Agent
 @app.route("/send-command", methods=['POST'])
 def send_command():
+    """Send Command to Agent and returns hydrus response
+    :param: All parameters enabled by the Agent.
+    :param: Please check Agent.py in Agent's main repository.
+    :return: hydrus response to the request
+    """
     global agent
     if agent is None:
         return "No agent connected."
