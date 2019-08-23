@@ -7,12 +7,15 @@ import GuiTheme from '../../app/gui-theme';
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
 
+// Custom imports
 import { Scrollbars } from 'react-custom-scrollbars';
 
+// Local components
 import EndpointsButtons from './endpoints-buttons/EndpointsButtons'
 import OperationsButtons from './operations-buttons/OperationsButtons'
 import PropertiesEditor from './properties-editor/PropertiesEditor'
 
+// Custom Css modification to Raw Command Input field
 const CssTextField = withStyles({
     root: {
         '& label.Mui-focused': {
@@ -36,6 +39,7 @@ const CssTextField = withStyles({
     },
 })(TextField);
 
+// Css Styles to the Components
 const styles = theme => ({
     outContainer: {
         height: '87vh',
@@ -133,7 +137,6 @@ class HydraConsole extends React.Component {
         this.temporaryEndpoint = null;
         this.selectedEndpoint = null;
         this.selectedOperation = null;
-
         this.getURL = true;
     }
 
@@ -173,9 +176,6 @@ class HydraConsole extends React.Component {
         this.setState({
             resourcesIDs: resourcesIDs
         })
-
-        //debugger
-        //this.resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
     }
 
     sendCommand(){
@@ -272,15 +272,10 @@ class HydraConsole extends React.Component {
             });
             return
         }
-        // this.props.serverUrl  url
-
-        // this.resourcesIDs[this.temporaryEndpoint]['ResourceID']
-
         axios.post(this.agentEndpoint + '/send-command', {
             method: this.selectedOperation.method.toLowerCase(),
             resource_type: this.selectedEndpoint.property.label,
             filters: this.state.properties[this.temporaryEndpoint],
-            //url: 'Flintstone',
           })
           .then(function (response) {
                 this.setState({
@@ -291,8 +286,6 @@ class HydraConsole extends React.Component {
           .catch(function (error) {
             console.log(error);
           });
-        
-        //this.outputText 
     }
 
     jsonStringifyReplacer(key, value) {
@@ -304,6 +297,8 @@ class HydraConsole extends React.Component {
       }
       
     render() {
+        // Block of values that need to be re assigned every rendering update
+        // They are used below along the html
         const { classes } = this.props;
         const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
         this.selectedEndpoint = selectedEndpoint;
@@ -330,6 +325,7 @@ class HydraConsole extends React.Component {
                                "(\"/" + selectedEndpoint.property.label + "\", "  +
                                stringProps + ")"
         }
+
         return (
             <Grid container className={classes.outContainer}>
                 <Grid item md={4} xs={12} container

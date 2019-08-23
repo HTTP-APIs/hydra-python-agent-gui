@@ -29,7 +29,6 @@ class EndpointsButtons extends React.Component {
     }
 
     selectButton(clickedButton){
-        
         var updatedButtons = this.state.buttons.slice();
         updatedButtons[this.state.selectedButton] = false;
         updatedButtons[clickedButton] = true;

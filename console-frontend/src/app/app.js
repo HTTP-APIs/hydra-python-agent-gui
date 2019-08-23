@@ -28,8 +28,8 @@ class AgentGUI extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      consoleWidth: 6, //6 | 12 
-      hidden: false, //false | true,
+      consoleWidth: 6, 
+      hidden: false, 
       classes: null,
       apidocGraph: {edges: null, nodes: null},
       serverURL: "http://localhost:8080/serverapi/"
@@ -71,6 +71,7 @@ class AgentGUI extends React.Component {
       })
     }
   }
+
   handleChangeServerURL(e){
     debugger
     this.setState({
@@ -162,7 +163,7 @@ class AgentGUI extends React.Component {
         </ThemeProvider>
       );
     }else{
-      
+      // This should return a loading screen
       return (<div className="lds-circle"><div></div></div>)
     }
   }
