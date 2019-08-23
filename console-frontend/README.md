@@ -1,8 +1,30 @@
 ## Hydra Agent Console GUI
 
-[Development in progress]
+The React Frontend is divided in three main components.
 
-## Available Scripts
+- Hydra Console has the state for the whole component and its subcomponents are all controlled components.
+- Hydra Graph only loads vis.js module and show what's returned by the ```/apidoc-graph``` endpoint
+- App.js only has internally the fetched ApiDoc and controls the state of the views of maximizing/minimizing the Console.
+
+The overall core structure of the Application is the following:
+```
+/app
+    # This is the main component, declares <HydraConsole> and <HydraGraph>
+    app.js 
+/components
+	# HydraConsole component and its Subcomponents
+	/hydra-console
+		/endpoints-buttons
+		/operations-buttons
+		/properties-editor
+	# HydraGraph component
+	/hydra-graph
+```
+
+### Contributing
+There are multiple issues open to make the GUI better. When you make changes, make sure you run ```npm run build``` to create an updated production build for the Flask Backend.
+
+## React Default Available Scripts
 
 In the project directory, you can run:
 
