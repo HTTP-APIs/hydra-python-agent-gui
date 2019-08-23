@@ -7,8 +7,6 @@ const styles = theme => ({
     graphContainer: {
         width: '100%',
         height: '82vh',
-        //backgroundColor: '#f00'
-        //backgroundColor: GuiTheme.palette.primary.dark,
     },
 });
 
@@ -18,17 +16,21 @@ class HydraGraph extends React.Component {
         debugger
         var { DataSet, Network } = require('visjs-network');
 
-        // create an array with edges and nodes
+        // Create Node and Edge Datasets 
         var nodes = new DataSet(this.props.apidocGraph.nodes)
         var edges = new DataSet(this.props.apidocGraph.edges)
 
-        // create a network
+        // Get reference to the mynetwork div
         var container = document.getElementById('mynetwork');
+
         var data = {
-        nodes: nodes,
-        edges: edges
+            nodes: nodes,
+            edges: edges
         };
+
+        // See vis.js network options for more details on how to use this
         var options = {};
+        // Create a network
         // eslint-disable-next-line
         var network = new Network(container, data, options);
     }
