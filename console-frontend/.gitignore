@@ -1,4 +1,7 @@
-/build
+# We're using npm as our package manager
+yarn.lock
+
+# Output folders
 /coverage
 /node_modules
 /.DS_Store
