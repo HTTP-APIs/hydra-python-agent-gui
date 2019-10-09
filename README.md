@@ -15,7 +15,7 @@ pip3 install -r requirements.txt
 The Agent uses a Redis local server as a caching layer. That said, it's necessary that you run Redis Graph locally:
 
 ```
-./redis_setup.sh # <- Might be necessary to uso sudo
+./redis_setup.sh # <- Might be necessary to use sudo
 ```
 
 ### Running the GUI
