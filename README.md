@@ -7,7 +7,9 @@ This is a GUI for the [Hydra Ecosystem's Agent](https://github.com/HTTP-APIs/hyd
 It's recommended that you use venv(virtual environment):
 
 ```
+apt-get install python3-venv # If not installed
 python3 -m venv venv
+source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
@@ -15,7 +17,7 @@ pip3 install -r requirements.txt
 The Agent uses a Redis local server as a caching layer. That said, it's necessary that you run Redis Graph locally:
 
 ```
-./redis_setup.sh # <- Might be necessary to use sudo
+sudo ./redis_setup.sh # <- Might be necessary to uso sudo
 ```
 
 ### Running the GUI
