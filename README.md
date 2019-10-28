@@ -20,6 +20,12 @@ The Agent uses a Redis local server as a caching layer. That said, it's necessar
 sudo ./redis_setup.sh # <- Might be necessary to uso sudo
 ```
 
+### Run hydrus
+It's important to run hydrus server before you run GUI. You can get hydrus from [here](https://github.com/HTTP-APIs/hydrus). After you have installed it correctly following the instructions given readme, It's time to run hydrus
+```
+hydrus serve
+```
+
 ### Running the GUI
 If you've installed the Requirements and have the proper Redis running you can simply:
 ```
