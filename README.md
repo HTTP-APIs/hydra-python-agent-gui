@@ -21,7 +21,7 @@ sudo ./redis_setup.sh # <- Might be necessary to uso sudo
 ```
 
 ### Run hydrus
-It's important to run hydrus server before you run GUI. You can get hydrus from [here](https://github.com/HTTP-APIs/hydrus). After you have installed it correctly following the instructions given readme, It's time to run hydrus
+It's important to run hydrus server before you run GUI. You can get hydrus from [here](https://github.com/HTTP-APIs/hydrus). After you have installed it correctly following the instructions given in it's readme, It's time to run hydrus
 ```
 hydrus serve
 ```
