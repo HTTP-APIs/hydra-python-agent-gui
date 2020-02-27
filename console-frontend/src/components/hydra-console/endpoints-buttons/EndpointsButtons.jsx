@@ -6,8 +6,8 @@ const styles = theme => ({
     endpointButton: {
         width: '80%'
     },
-    endpointSelectedButton: { 
-        backgroundColor: '#f00',  
+    endpointSelectedButton: {
+        backgroundColor: '#f00',
     }
 });
 
@@ -36,7 +36,7 @@ class EndpointsButtons extends React.Component {
             buttons: updatedButtons,
             selectedButton: clickedButton
         })
-         
+
     }
 
     generateButtons(){
@@ -44,7 +44,7 @@ class EndpointsButtons extends React.Component {
         const { classes } = this.props;
 
         var buttons = endpointsArray.map( (currProperty, index) => {
-            const labelEndpoint = this.props.endpoints[currProperty].property.label 
+            const labelEndpoint = this.props.endpoints[currProperty].property.label
             return(<Button
                 key={currProperty}
                 variant="contained"
@@ -57,7 +57,7 @@ class EndpointsButtons extends React.Component {
     }
 
     render() {
-        
+
         return this.generateButtons()
     }
 }

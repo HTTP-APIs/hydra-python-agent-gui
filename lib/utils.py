@@ -40,7 +40,7 @@ def start_agent():
 
 def hydra_doc():
     """Serve Hydra Doc
-    :return: Hydra Doc loaded on the agent with url for current connected 
+    :return: Hydra Doc loaded on the agent with url for current connected
     """
     apidoc = agent.fetch_apidoc()
     generatedApiDoc = apidoc.generate()
