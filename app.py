@@ -5,7 +5,7 @@ import sys
 import json, os
 from requests import get
 
-from lib.func import serve, start_agent, hydra_doc, apidoc_graph, send_command, default
+from lib.utils import serve, start_agent, hydra_doc, apidoc_graph, send_command, default
 
 
 
@@ -18,12 +18,12 @@ CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 url = "http://localhost:8080/serverapi"
 agent = Agent(url)
 
-app.add_url_rule('/<path:path>','serve',serve)
-app.add_url_rule('/start-agent','start-agent', start_agent)
-app.add_url_rule('/hydra-doc','hydra-doc', hydra_doc)
-app.add_url_rule('/apidoc-graph','apidoc-graph', apidoc_graph)
-app.add_url_rule('/send-command','send-command', send_command)
-app.add_url_rule('/','default',default)
+app.add_url_rule('/<path:path>', 'serve', serve)
+app.add_url_rule('/start-agent', 'start-agent', start_agent)
+app.add_url_rule('/hydra-doc', 'hydra-doc', hydra_doc)
+app.add_url_rule('/apidoc-graph', 'apidoc-graph', apidoc_graph)
+app.add_url_rule('/send-command', 'send-command', send_command)
+app.add_url_rule('/','default', default)
 
 
 if __name__ == '__main__':
