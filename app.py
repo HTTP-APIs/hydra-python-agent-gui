@@ -132,7 +132,10 @@ def create_node(id, shape, size, label):
         "id": id,
         "shape": shape,
         "size": size,
-        "label": label
+        "label": label,
+        "color": {
+            "background": "#FBD20B"
+        }
     }
     return node
 
