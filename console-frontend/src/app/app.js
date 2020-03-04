@@ -18,9 +18,14 @@ const styles = theme => ({
   serverInputContainer: {
     width: '100%',
     backgroundColor: GuiTheme.palette.primary.light,
+    border: 10
   },
   serverInput: {
-      width: '93%'
+      width: '93%',
+      backgroundColor: '#FBD20B',
+      padding: '5px',
+      borderColor: '#000',
+      borderRadius: 10,
   },
 });
 
@@ -130,6 +135,7 @@ class AgentGUI extends React.Component {
                       value={this.state.serverURL}
                       onChange={ (e) => this.handleChangeServerURL(e) }
                       className={classes.serverInput}
+                      disableUnderline={true} 
                       inputProps={{
                           'aria-label': 'hydrus-url',
                       }}

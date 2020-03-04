@@ -44,6 +44,9 @@ const styles = theme => ({
     outContainer: {
         height: '87vh',
         backgroundColor: GuiTheme.palette.primary.dark,
+        [theme.breakpoints.down('md')]: {
+            height: '160vh'
+        }
     },
     propertiesContainer: {
         maxHeight: '40vh',
@@ -73,6 +76,10 @@ const styles = theme => ({
         backgroundColor: GuiTheme.palette.primary.light,
         whiteSpace: 'pre',
         overflowY: 'auto',
+        ['@media (min-width:780px)']: { 
+            width: '80%',
+            fontSize: '0.8em'
+        }
     },
     outputContainerHeader: {
         width: '90%',
@@ -94,7 +101,7 @@ const styles = theme => ({
         boxShadow: '0 3px 5px 2px rgba(255, 255, 255, .3)',
         height: 48,
         width: '22%',
-    },
+    }
 });
 
 class HydraConsole extends React.Component {
@@ -327,7 +334,7 @@ class HydraConsole extends React.Component {
         }
 
         return (
-            <Grid container className={classes.outContainer}>
+            <Grid container className={classes.outContainer} md={12}>
                 <Grid item md={4} xs={12} container
                     direction="column"
                     justify="space-evenly"
@@ -417,6 +424,7 @@ class HydraConsole extends React.Component {
                     </Button>
                 </Grid>
                 <Grid item xs={12}
+                    spacing={5}
                     container
                     direction="column"
                     justify="center"
