@@ -110,6 +110,7 @@ class HydraConsole extends React.Component {
         var endpoints = null;
         var classesMapping = []
         this.agentEndpoint = ""
+        let selectedOperationIndex = 0
         
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
         for(var index in this.props.hydraClasses){
@@ -151,10 +152,25 @@ class HydraConsole extends React.Component {
     }
 
     selectEndpoint(endpointIndex) {
-        this.setState(
-            {selectedEndpointIndex: endpointIndex,
-            selectedOperationIndex: 0}
-        )
+        const selectedEndpoint = this.state.endpoints[endpointIndex];
+        this.selectedEndpoint = selectedEndpoint;
+
+        const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
+        this.temporaryEndpoint = temporaryEndpoint;
+
+        const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];       
+        const operations = selectedHydraClass.supportedOperation
+
+        let selectedOperationIndex = 0;
+        operations.map((operation, index) => {
+            if(operation.method == "GET")
+                selectedOperationIndex = index
+        })
+
+        this.setState({
+                selectedEndpointIndex: endpointIndex,
+                selectedOperationIndex: selectedOperationIndex
+        })
     }
 
     selectOperation(operationIndex) {
@@ -309,14 +325,14 @@ class HydraConsole extends React.Component {
         const { classes } = this.props;
         const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
         this.selectedEndpoint = selectedEndpoint;
+        //console.log("SELECTEDENDPOINT ", this.selectEndpoint)
 
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
-        
+       // console.log("TEMPORYENDPOINT ", this.temporaryEndpoint)
         var selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
-        const selectedOperation = selectedHydraClass.supportedOperation[
-            this.state.selectedOperationIndex];
+        const selectedOperation = selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
         this.selectedOperation = selectedOperation;
         
         var stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
