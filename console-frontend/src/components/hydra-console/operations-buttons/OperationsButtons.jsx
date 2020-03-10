@@ -12,11 +12,16 @@ class OperationsButtons extends React.Component {
         super(props);
         var buttons = []
         
-        Object.keys(this.props.operations).forEach( (operation) => {
+        let selectedButton = 0;
+
+        const operationsArray = Object.keys(this.props.operations);
+        operationsArray.forEach( (operation, index) => {
             buttons[operation] = false
+            if(this.props.operations[operation].method == "GET")
+                selectedButton = index
         })
 
-        const selectedButton = 0;
+        
         buttons[ selectedButton ] = true
         
         this.state = {

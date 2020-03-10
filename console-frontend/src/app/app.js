@@ -18,9 +18,15 @@ const styles = theme => ({
   serverInputContainer: {
     width: '100%',
     backgroundColor: GuiTheme.palette.primary.light,
+    border: 10,
+    display: 'flex'
   },
   serverInput: {
-      width: '93%'
+      width: '75%',
+      backgroundColor: '#FBD20B',
+      padding: '5px',
+      borderColor: '#000',
+      borderRadius: 10,
   },
 });
 
@@ -118,18 +124,20 @@ class AgentGUI extends React.Component {
                 fontColor="textSecondary"></NavBar>
                 <Grid
                   container
+                  display="flex"
                   direction="row"
                   justify="center"
                   alignItems="center"
                   className={classes.serverInputContainer}>
-                  <InputLabel htmlFor="aaaaa">Server URL:</InputLabel>
+                  <InputLabel htmlFor="server_url_input">Server URL:</InputLabel>
                   <Input
-                      id="aaaaa"
+                      id="server_url_input"
                       placeholder="Server URL - Default: https://localhost:8080/serverapi/"
                       onKeyPress={ (e) => {if(e.key === 'Enter'){ this.submitServerURL(e) } }}
                       value={this.state.serverURL}
                       onChange={ (e) => this.handleChangeServerURL(e) }
                       className={classes.serverInput}
+                      disableUnderline={true} 
                       inputProps={{
                           'aria-label': 'hydrus-url',
                       }}

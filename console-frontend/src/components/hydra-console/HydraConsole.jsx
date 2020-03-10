@@ -44,6 +44,9 @@ const styles = theme => ({
     outContainer: {
         height: '87vh',
         backgroundColor: GuiTheme.palette.primary.dark,
+        [theme.breakpoints.down('md')]: {
+            height: '160vh'
+        }
     },
     propertiesContainer: {
         maxHeight: '40vh',
@@ -73,6 +76,10 @@ const styles = theme => ({
         backgroundColor: GuiTheme.palette.primary.light,
         whiteSpace: 'pre',
         overflowY: 'auto',
+        ['@media (min-width:780px)']: { 
+            width: '80%',
+            fontSize: '0.8em'
+        }
     },
     outputContainerHeader: {
         width: '90%',
@@ -95,6 +102,16 @@ const styles = theme => ({
         height: 48,
         width: '22%',
     },
+    deleteIconButton: {
+        marginLeft: '60% !important',
+        marginBottom: '10px',
+        backgroundColor: GuiTheme.palette.primary.light,
+        color: GuiTheme.palette.primary.dark,
+        '&:hover': {
+            backgroundColor: GuiTheme.palette.secondary.light,
+            color: GuiTheme.palette.primary.dark,
+        },
+    }
 });
 
 class HydraConsole extends React.Component {
@@ -103,6 +120,14 @@ class HydraConsole extends React.Component {
         var endpoints = null;
         var classesMapping = []
         this.agentEndpoint = ""
+        let selectedOperationIndex = 0
+
+        // util variables
+        this.temporaryEndpoint = null;
+        this.previousEndpointIndex = 0; // for managing the state and local storage
+        this.selectedEndpoint = null;
+        this.selectedOperation = null;
+        this.getURL = true;
         
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
         for(var index in this.props.hydraClasses){
@@ -125,6 +150,20 @@ class HydraConsole extends React.Component {
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
             }
         }
+        
+        // Initialize the local storage with the empty values
+        if (localStorage.getItem('properties') === null) {
+            localStorage.setItem('properties', JSON.stringify(classesProperties))
+        }else{
+            classesProperties = JSON.parse(localStorage.getItem('properties'))
+        }
+
+        if (localStorage.getItem('resourceIDs') === null) {
+            localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        }else{
+            resourcesIDs = JSON.parse(localStorage.getItem('resourceIDs'))
+        }
+
         this.state = {
             hydraClasses: classesMapping,
             endpoints: endpoints,
@@ -134,20 +173,51 @@ class HydraConsole extends React.Component {
             selectedOperationIndex: 0,
             outputText: " Your request output will be displayed here..."
         };      
-        this.temporaryEndpoint = null;
-        this.selectedEndpoint = null;
-        this.selectedOperation = null;
-        this.getURL = true;
+
     }
 
     componentDidMount() {
     }
 
+    componentDidUpdate() {
+        this.restorePropertiesAndResourceIDs()
+    }
+
+    restorePropertiesAndResourceIDs() {
+        if(this.previousEndpointIndex != this.state.selectedEndpointIndex) {
+            const storedProperties = JSON.parse(localStorage.getItem('properties'))
+            const storedResourceIDs = JSON.parse(localStorage.getItem('resourceIDs'))
+           
+            this.setState({
+                properties: storedProperties,
+                resourcesIDs: storedResourceIDs
+            })
+
+            // updating for next time
+            this.previousEndpointIndex = this.state.selectedEndpointIndex 
+        }
+    }
+
     selectEndpoint(endpointIndex) {
-        this.setState(
-            {selectedEndpointIndex: endpointIndex,
-            selectedOperationIndex: 0}
-        )
+        const selectedEndpoint = this.state.endpoints[endpointIndex];
+        this.selectedEndpoint = selectedEndpoint;
+
+        const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
+        this.temporaryEndpoint = temporaryEndpoint;
+
+        const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];       
+        const operations = selectedHydraClass.supportedOperation
+
+        let selectedOperationIndex = 0;
+        operations.map((operation, index) => {
+            if(operation.method == "GET")
+                selectedOperationIndex = index
+        })
+
+        this.setState({
+                selectedEndpointIndex: endpointIndex,
+                selectedOperationIndex: selectedOperationIndex
+        })
     }
 
     selectOperation(operationIndex) {
@@ -162,6 +232,9 @@ class HydraConsole extends React.Component {
 
         let auxProperties = Object.assign({}, this.state.properties);
         auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
+       
+        localStorage.setItem('properties', JSON.stringify(auxProperties))
+       
         this.setState({
             properties: auxProperties
         })
@@ -173,10 +246,37 @@ class HydraConsole extends React.Component {
 
         let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
+
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        
         this.setState({
             resourcesIDs: resourcesIDs
         })
     }
+
+    clearAllInputs(e) {
+        // Will clear the current endpoints input 
+        let auxProperties = Object.assign({}, this.state.properties);
+        Object.keys(auxProperties[this.temporaryEndpoint]).map(name => {
+            auxProperties[this.temporaryEndpoint][name] = ""
+        })
+
+        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        Object.keys(resourcesIDs).map(name => {
+            resourcesIDs[name]['ResourceID'] = ""
+        })
+
+        localStorage.setItem('properties', JSON.stringify(auxProperties))
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+
+
+        this.setState({
+            properties: auxProperties,
+            resourcesIDs: resourcesIDs
+        })
+    }
+
+
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
@@ -305,11 +405,10 @@ class HydraConsole extends React.Component {
 
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
-        
+       
         var selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
-        const selectedOperation = selectedHydraClass.supportedOperation[
-            this.state.selectedOperationIndex];
+        const selectedOperation = selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
         this.selectedOperation = selectedOperation;
         
         var stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
@@ -327,7 +426,7 @@ class HydraConsole extends React.Component {
         }
 
         return (
-            <Grid container className={classes.outContainer}>
+            <Grid container className={classes.outContainer} md={12}>
                 <Grid item md={4} xs={12} container
                     direction="column"
                     justify="space-evenly"
@@ -356,6 +455,13 @@ class HydraConsole extends React.Component {
                     direction="column"
                     justify="center"
                     alignItems="center">
+                    <Button aria-label="delete" 
+                        size="medium"
+                        variant="contained" 
+                        className={classes.deleteIconButton}
+                        onClick={(e) => this.clearAllInputs(e)}>
+                        CLEAR
+                    </Button>
                     <Grid className={classes.propertiesContainer}
                         container
                         direction="row"
@@ -417,6 +523,7 @@ class HydraConsole extends React.Component {
                     </Button>
                 </Grid>
                 <Grid item xs={12}
+                    spacing={5}
                     container
                     direction="column"
                     justify="center"
