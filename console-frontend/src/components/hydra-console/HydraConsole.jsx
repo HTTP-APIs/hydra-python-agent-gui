@@ -112,6 +112,14 @@ const styles = theme => ({
     }
 });
 
+function isEmpty(object){
+    if(Object.keys(object).length === 0)
+    return true
+
+    return false 
+}
+
+
 class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
@@ -150,10 +158,21 @@ class HydraConsole extends React.Component {
         }
         
         // Initialize the local storage with the empty values
-        localStorage.clear();    
-        localStorage.setItem('properties', JSON.stringify(classesProperties))
-        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        //localStorage.clear();    
+        const storedProperties = JSON.parse(localStorage.getItem('properties'))
+        const storedResourceIDs = JSON.parse(localStorage.getItem('resourceIDs'))
 
+        if(isEmpty(storedProperties)){
+            localStorage.setItem('properties', JSON.stringify(classesProperties))
+        }else{
+            classesProperties = storedProperties
+        }
+
+        if(isEmpty(resourcesIDs)){
+            localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        }else{
+            resourcesIDs = storedResourceIDs
+        }
 
 
         this.state = {
