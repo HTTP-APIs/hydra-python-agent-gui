@@ -101,6 +101,14 @@ const styles = theme => ({
         boxShadow: '0 3px 5px 2px rgba(255, 255, 255, .3)',
         height: 48,
         width: '22%',
+    },
+    deleteIconButton: {
+        backgroundColor: GuiTheme.palette.primary.light,
+        color: GuiTheme.palette.primary.dark,
+        '&:hover': {
+            backgroundColor: GuiTheme.palette.secondary.light,
+            color: GuiTheme.palette.primary.dark,
+        },
     }
 });
 
@@ -111,6 +119,13 @@ class HydraConsole extends React.Component {
         var classesMapping = []
         this.agentEndpoint = ""
         let selectedOperationIndex = 0
+
+        // util variables
+        this.temporaryEndpoint = null;
+        this.previousEndpointIndex = 0; // for managing the state and local storage
+        this.selectedEndpoint = null;
+        this.selectedOperation = null;
+        this.getURL = true;
         
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
         for(var index in this.props.hydraClasses){
@@ -133,6 +148,14 @@ class HydraConsole extends React.Component {
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
             }
         }
+        
+        // Initialize the local storage with the empty values
+        localStorage.clear();    
+        localStorage.setItem('properties', JSON.stringify(classesProperties))
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+
+
+
         this.state = {
             hydraClasses: classesMapping,
             endpoints: endpoints,
@@ -142,13 +165,32 @@ class HydraConsole extends React.Component {
             selectedOperationIndex: 0,
             outputText: " Your request output will be displayed here..."
         };      
-        this.temporaryEndpoint = null;
-        this.selectedEndpoint = null;
-        this.selectedOperation = null;
-        this.getURL = true;
+
     }
 
     componentDidMount() {
+    }
+
+
+    
+
+    componentDidUpdate() {
+        this.restorePropertiesAndResourceIDs()
+    }
+
+    restorePropertiesAndResourceIDs() {
+        if(this.previousEndpointIndex != this.state.selectedEndpointIndex) {
+            const storedProperties = JSON.parse(localStorage.getItem('properties'))
+            const storedResourceIDs = JSON.parse(localStorage.getItem('resourceIDs'))
+           
+            this.setState({
+                properties: storedProperties,
+                resourcesIDs: storedResourceIDs
+            })
+
+            // updating for next time
+            this.previousEndpointIndex = this.state.selectedEndpointIndex 
+        }
     }
 
     selectEndpoint(endpointIndex) {
@@ -185,6 +227,9 @@ class HydraConsole extends React.Component {
 
         let auxProperties = Object.assign({}, this.state.properties);
         auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
+       
+        localStorage.setItem('properties', JSON.stringify(auxProperties))
+       
         this.setState({
             properties: auxProperties
         })
@@ -196,10 +241,37 @@ class HydraConsole extends React.Component {
 
         let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
+
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        
         this.setState({
             resourcesIDs: resourcesIDs
         })
     }
+
+    clearAllInputs(e) {
+        // Will clear the current endpoints input 
+        let auxProperties = Object.assign({}, this.state.properties);
+        Object.keys(auxProperties[this.temporaryEndpoint]).map(name => {
+            auxProperties[this.temporaryEndpoint][name] = ""
+        })
+
+        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        Object.keys(resourcesIDs).map(name => {
+            resourcesIDs[name]['ResourceID'] = ""
+        })
+
+        localStorage.setItem('properties', JSON.stringify(auxProperties))
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+
+
+        this.setState({
+            properties: auxProperties,
+            resourcesIDs: resourcesIDs
+        })
+    }
+
+
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
@@ -325,11 +397,10 @@ class HydraConsole extends React.Component {
         const { classes } = this.props;
         const selectedEndpoint = this.state.endpoints[this.state.selectedEndpointIndex];
         this.selectedEndpoint = selectedEndpoint;
-        //console.log("SELECTEDENDPOINT ", this.selectEndpoint)
 
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
-       // console.log("TEMPORYENDPOINT ", this.temporaryEndpoint)
+       
         var selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
         const selectedOperation = selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
@@ -373,6 +444,13 @@ class HydraConsole extends React.Component {
                             this.selectOperation(currProperty)
                         }}> 
                     </OperationsButtons>
+                    <Button aria-label="delete" 
+                                size="medium"
+                                variant="contained" 
+                                className={classes.deleteIconButton}
+                                onClick={(e) => this.clearAllInputs(e)}>
+                         CLEAR
+                    </Button>
                 </Grid>
                 <Grid
                     item md={6} xs={12} container
