@@ -103,6 +103,8 @@ const styles = theme => ({
         width: '22%',
     },
     deleteIconButton: {
+        marginLeft: '60% !important',
+        marginBottom: '10px',
         backgroundColor: GuiTheme.palette.primary.light,
         color: GuiTheme.palette.primary.dark,
         '&:hover': {
@@ -111,14 +113,6 @@ const styles = theme => ({
         },
     }
 });
-
-function isEmpty(object){
-    if(Object.keys(object).length === 0)
-    return true
-
-    return false 
-}
-
 
 class HydraConsole extends React.Component {
     constructor(props) {
@@ -158,22 +152,17 @@ class HydraConsole extends React.Component {
         }
         
         // Initialize the local storage with the empty values
-        //localStorage.clear();    
-        const storedProperties = JSON.parse(localStorage.getItem('properties'))
-        const storedResourceIDs = JSON.parse(localStorage.getItem('resourceIDs'))
-
-        if(isEmpty(storedProperties)){
+        if (localStorage.getItem('properties') === null) {
             localStorage.setItem('properties', JSON.stringify(classesProperties))
         }else{
-            classesProperties = storedProperties
+            classesProperties = JSON.parse(localStorage.getItem('properties'))
         }
 
-        if(isEmpty(resourcesIDs)){
+        if (localStorage.getItem('resourceIDs') === null) {
             localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
         }else{
-            resourcesIDs = storedResourceIDs
+            resourcesIDs = JSON.parse(localStorage.getItem('resourceIDs'))
         }
-
 
         this.state = {
             hydraClasses: classesMapping,
@@ -189,9 +178,6 @@ class HydraConsole extends React.Component {
 
     componentDidMount() {
     }
-
-
-    
 
     componentDidUpdate() {
         this.restorePropertiesAndResourceIDs()
@@ -463,19 +449,19 @@ class HydraConsole extends React.Component {
                             this.selectOperation(currProperty)
                         }}> 
                     </OperationsButtons>
-                    <Button aria-label="delete" 
-                                size="medium"
-                                variant="contained" 
-                                className={classes.deleteIconButton}
-                                onClick={(e) => this.clearAllInputs(e)}>
-                         CLEAR
-                    </Button>
                 </Grid>
                 <Grid
                     item md={6} xs={12} container
                     direction="column"
                     justify="center"
                     alignItems="center">
+                    <Button aria-label="delete" 
+                        size="medium"
+                        variant="contained" 
+                        className={classes.deleteIconButton}
+                        onClick={(e) => this.clearAllInputs(e)}>
+                        CLEAR
+                    </Button>
                     <Grid className={classes.propertiesContainer}
                         container
                         direction="row"
