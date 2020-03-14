@@ -12,7 +12,8 @@ const useStyles = makeStyles(theme => ({
     hydraEcoLogo: {
       maxWidth: '30px',
       cursor: 'pointer',
-      },
+      marginRight: '6px',
+      }
   }));
 
 const NavBar = (props) => {
