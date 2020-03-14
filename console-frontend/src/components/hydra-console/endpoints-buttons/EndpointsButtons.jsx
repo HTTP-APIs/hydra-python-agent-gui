@@ -4,7 +4,9 @@ import { withStyles } from '@material-ui/styles';
 
 const styles = theme => ({
     endpointButton: {
-        width: '80%'
+        width: '80%',
+        marginBottom: '10px'
+
     },
     endpointSelectedButton: { 
         backgroundColor: '#f00',  
