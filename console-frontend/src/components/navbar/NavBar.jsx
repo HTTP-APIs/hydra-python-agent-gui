@@ -7,12 +7,12 @@ import AspectRatioIcon from '@material-ui/icons/AspectRatio';
 import { makeStyles } from '@material-ui/core/styles';
 
 import logo from '../../assets/images/hydra_eco_logo.png';
-
+import github_logo from '../../assets/images/GitHub.png';
 const useStyles = makeStyles(theme => ({
     hydraEcoLogo: {
       maxWidth: '30px',
-      cursor: 'pointer'
-    },
+      cursor: 'pointer',
+      },
   }));
 
 const NavBar = (props) => {
@@ -50,6 +50,9 @@ const NavBar = (props) => {
                     <div style={toolbar.centeringSpace}></div>
                     {props.onClick && (
                     <img src={logo} onClick={ () => window.open('http://www.hydraecosystem.org/')}  className={classes.hydraEcoLogo} alt="logo" />
+                    )}
+                    {props.onClick && (
+                    <img src={github_logo} onClick={ () => window.open('https://github.com/HTTP-APIs/hydra-python-agent-gui')}  className={classes.hydraEcoLogo} alt="logo" />
                     )}
                 </Toolbar>
             </AppBar>
