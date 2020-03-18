@@ -111,6 +111,20 @@ const styles = theme => ({
             backgroundColor: GuiTheme.palette.secondary.light,
             color: GuiTheme.palette.primary.dark,
         },
+    },
+    outputConsoleBraces: {
+        marginLeft: '20px'
+    },
+    outputConsoleKey: {
+        marginLeft: '35px'
+    },
+    outputConsoleValue: {
+        marginLeft: '10px'
+    },
+    outputConsoleLink: {
+        marginLeft: '10px',
+        color: '#0276FD',
+        cursor: 'pointer'
     }
 });
 
@@ -244,6 +258,7 @@ class HydraConsole extends React.Component {
         // Fetch will work by URL
         this.getURL = true;
 
+        console.log(e.target.name +" "+ e.target.value)
         let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
 
@@ -276,7 +291,54 @@ class HydraConsole extends React.Component {
         })
     }
 
+    setResourceID(name, value) {
+        this.getURL = true;
 
+        console.log(name +" "+ value)
+        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        resourcesIDs[name]['ResourceID'] = value.split('/').pop();
+
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        
+        this.setState({
+            resourcesIDs: resourcesIDs
+        })
+    }
+
+    getEntryOutput(data) {
+        let arr = []
+        const classes = this.props.classes
+        data.map(entry => {
+            arr.push(<div className={classes.outputConsoleBraces}>&#123;</div>)
+
+            Object.keys(entry).map(key => {
+                arr.push(<div className={classes.outputEntryDiv}></div>)
+                    arr.push(<span className={classes.outputConsoleKey}>{key} :</span>)
+                    if(key == "@id")
+                    arr.push(<span className={classes.outputConsoleLink}
+                                   onClick={(e) => this.setResourceID(this.temporaryEndpoint, entry[key])} 
+                                   >
+                                       {entry[key]}
+                            </span>)
+                    else
+                    arr.push(<span className={classes.outputConsoleValue}>{entry[key]}</span>)
+                arr.push(<div className={classes.outputClosingDiv}></div>)
+            })
+            arr.push(<div className={classes.outputConsoleBraces}>&#125;</div>)
+        })
+
+        return arr.map(component => (<>{component}</>))
+    }
+
+    generateOutputLinks(data) {  
+        return (
+            <>
+                <div>[</div>
+                    {this.getEntryOutput(data)}
+                <div>]</div>
+            </>
+        )
+    }
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
@@ -305,8 +367,13 @@ class HydraConsole extends React.Component {
             }
             axios.post(this.agentEndpoint + '/send-command', getBody)
               .then( (response) =>  {
+                let outputText = ""
+                if(response.data.length === 0)
+                 outputText = String(JSON.stringify(response.data, this.jsonStringifyReplacer, 8))
+                else
+                 outputText = this.generateOutputLinks(response.data)
                 this.setState({
-                    outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+                    outputText,
                 })
               })
               .catch(function (error) {
