@@ -2,6 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/styles';
 // eslint-disable-next-line
 import { DataSet, Network } from 'visjs-network';
+import { node, func } from 'prop-types';
 
 const styles = theme => ({
     graphContainer: {
@@ -27,12 +28,28 @@ class HydraGraph extends React.Component {
             nodes: nodes,
             edges: edges
         };
-
+        
         // See vis.js network options for more details on how to use this
-        var options = {};
+        var options = {
+            interaction: { hover: true },
+            nodes:{
+            color: {
+                hover: {
+                    border: '#5BDE79',
+                    background: '#5BDE79'
+                  }
+            }}
+        };
         // Create a network
         // eslint-disable-next-line
+
         var network = new Network(container, data, options);
+        network.on("select", function(event){
+            var { nodes, edges } =event;
+            console.log(nodes);
+            console.log(edges);
+        });
+
     }
 
    render() {
