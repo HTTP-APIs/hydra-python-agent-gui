@@ -32,7 +32,7 @@ class HydraGraph extends React.Component {
         var options = {};
         // Create a network
         // eslint-disable-next-line
-        var network = new Network(container, data, options);
+
     }
 
    render() {
