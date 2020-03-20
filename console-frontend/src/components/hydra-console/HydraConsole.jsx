@@ -106,6 +106,7 @@ const styles = theme => ({
 class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
+        this.child = React.createRef();
         var endpoints = null;
         var classesMapping = []
         this.agentEndpoint = ""
@@ -190,12 +191,14 @@ class HydraConsole extends React.Component {
     selectEndpoint(endpointIndex) {
         const selectedEndpoint = this.state.endpoints[endpointIndex];
         this.selectedEndpoint = selectedEndpoint;
+        this.child.current.selectButton(endpointIndex);
 
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
 
         const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];       
         const operations = selectedHydraClass.supportedOperation
+        
 
         let selectedOperationIndex = 0;
         operations.map((operation, index) => {
@@ -421,6 +424,7 @@ class HydraConsole extends React.Component {
                     justify="space-evenly"
                     alignItems="center">
                     <EndpointsButtons
+                        ref={this.child}
                         selectEndpoint={ (currProperty) => {
                             this.selectEndpoint(currProperty) }}
                         endpoints={this.state.endpoints}>   
