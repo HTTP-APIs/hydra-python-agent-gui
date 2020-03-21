@@ -133,14 +133,17 @@ const styles = theme => ({
 
 
 function isObject(value) {
+    // utility method that returns boolean value
     return value && typeof value === "object" && value.constructor === Object;
 }
   
 function isArray(value) {
+    // utility method that returns boolean value
     return value && typeof value === "object" && value.constructor === Array;
 }
   
 function isString(value) {
+    // utility method that returns boolean value
     return typeof value === "string" || value instanceof String;
 }
 
@@ -308,9 +311,8 @@ class HydraConsole extends React.Component {
     }
 
     setResourceID(name, value) {
+        // This is a ulitlity method to set the Resource Field id from clicking on the output link in output console
         this.getURL = true;
-
-        console.log(name +" "+ value)
         let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[name]['ResourceID'] = value.split('/').pop();
 
@@ -449,11 +451,8 @@ class HydraConsole extends React.Component {
             </div>
         );
        }
+        return <div>{JSON.stringify(data, this.jsonStringifyReplacer, 8)}</div>
      };
-
-
-
-
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
@@ -508,7 +507,7 @@ class HydraConsole extends React.Component {
                 let outputText = ""
                 outputText = this.convertOutput(response.data)
               this.setState({
-                  outputText: outputText,
+                  outputText,
               })
             })
             .catch(function (error) {
@@ -530,7 +529,7 @@ class HydraConsole extends React.Component {
               let outputText = ""
               outputText = this.convertOutput(response.data)
               this.setState({
-                  outputText: outputText,
+                  outputText,
               })
             })
             .catch(function (error) {
@@ -549,7 +548,7 @@ class HydraConsole extends React.Component {
               let outputText = ""
               outputText = this.convertOutput(response.data)
               this.setState({
-                  outputText: outputText,
+                  outputText,
               })
             })
             .catch(function (error) {
@@ -563,8 +562,10 @@ class HydraConsole extends React.Component {
             filters: this.state.properties[this.temporaryEndpoint],
           })
           .then(function (response) {
+            let outputText = ""
+            outputText = this.convertOutput(response)
                 this.setState({
-                    outputText: response,
+                    outputText,
                 })
             console.log(response);
           })
