@@ -19,7 +19,8 @@ const styles = theme => ({
     width: '100%',
     backgroundColor: GuiTheme.palette.primary.light,
     border: 10,
-    display: 'flex'
+    display: 'flex',
+    paddingBottom: 20
   },
   serverInput: {
       width: '75%',

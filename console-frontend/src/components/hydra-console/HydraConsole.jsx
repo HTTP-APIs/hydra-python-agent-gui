@@ -42,11 +42,7 @@ const CssTextField = withStyles({
 // Css Styles to the Components
 const styles = theme => ({
     outContainer: {
-        height: '87vh',
         backgroundColor: GuiTheme.palette.primary.dark,
-        [theme.breakpoints.down('md')]: {
-            height: '160vh'
-        }
     },
     propertiesContainer: {
         maxHeight: '40vh',
@@ -71,7 +67,7 @@ const styles = theme => ({
         flex: '100',
     },
     outputContainer: {
-        height: '40vh',
+        minHeight: '300px',
         width: '90%',
         backgroundColor: GuiTheme.palette.primary.light,
         whiteSpace: 'pre',
@@ -94,13 +90,6 @@ const styles = theme => ({
         marginRight: '1%',
         color: '#000',
         borderColor: '#0f0'
-    },
-    sendRequest: {
-        border: 0,
-        borderRadius: 3,
-        boxShadow: '0 3px 5px 2px rgba(255, 255, 255, .3)',
-        height: 48,
-        width: '22%',
     },
     deleteIconButton: {
         marginLeft: '60% !important',
@@ -613,7 +602,7 @@ class HydraConsole extends React.Component {
 
         return (
             <Grid container className={classes.outContainer} md={12}>
-                <Grid item md={4} xs={12} container
+                <Grid item xs={12} lg={5} container
                     direction="column"
                     justify="space-evenly"
                     alignItems="center">
@@ -624,7 +613,7 @@ class HydraConsole extends React.Component {
                     </EndpointsButtons>
                 </Grid>
                 <Grid
-                    item md={2} xs={12} container
+                    item xs={12} lg={2} container
                     direction="column"
                     justify="space-evenly"
                     alignItems="center">
@@ -637,7 +626,7 @@ class HydraConsole extends React.Component {
                     </OperationsButtons>
                 </Grid>
                 <Grid
-                    item md={6} xs={12} container
+                    item xs={12} lg={5} container
                     direction="column"
                     justify="center"
                     alignItems="center">
@@ -709,7 +698,6 @@ class HydraConsole extends React.Component {
                     </Button>
                 </Grid>
                 <Grid item xs={12}
-                    spacing={5}
                     container
                     direction="column"
                     justify="center"
