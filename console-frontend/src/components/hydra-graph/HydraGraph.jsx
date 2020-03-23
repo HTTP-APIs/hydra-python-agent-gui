@@ -14,25 +14,25 @@ class HydraGraph extends React.Component {
 
     componentDidMount(){
         debugger
-        var { DataSet, Network } = require('visjs-network');
+        let { DataSet, Network } = require('visjs-network');
 
         // Create Node and Edge Datasets 
-        var nodes = new DataSet(this.props.apidocGraph.nodes)
-        var edges = new DataSet(this.props.apidocGraph.edges)
+        let nodes = new DataSet(this.props.apidocGraph.nodes)
+        let edges = new DataSet(this.props.apidocGraph.edges)
 
         // Get reference to the mynetwork div
-        var container = document.getElementById('mynetwork');
+        let container = document.getElementById('mynetwork');
 
-        var data = {
+        let data = {
             nodes: nodes,
             edges: edges
         };
 
         // See vis.js network options for more details on how to use this
-        var options = {};
+        let options = {};
         // Create a network
         // eslint-disable-next-line
-        var network = new Network(container, data, options);
+        let network = new Network(container, data, options);
     }
 
    render() {
