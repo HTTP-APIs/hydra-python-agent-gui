@@ -11,7 +11,6 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
-    "redux": "^4.0.5",
     "visjs-network": "^4.24.10"
   },
   "scripts": {
@@ -34,5 +33,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "The React Frontend is divided in three main components.",
+  "main": "index.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
 }

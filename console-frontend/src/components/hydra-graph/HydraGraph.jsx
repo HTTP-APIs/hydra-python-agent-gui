@@ -77,14 +77,13 @@ class HydraGraph extends React.Component {
        endpoints.forEach(endpoints=>{
               if(endpoints.property.label==endpoint.label)
                 {
-                  console.log(i)
                   self.selectedNode(i)    
                  }
               i+=1;    
            })
          
         });
-        console.log(this.props);
+   
 
     }
 
