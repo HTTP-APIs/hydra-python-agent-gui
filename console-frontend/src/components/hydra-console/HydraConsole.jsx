@@ -490,7 +490,6 @@ class HydraConsole extends React.Component {
                 new_object: filteredProperties,
             }
             filteredProperties['@type'] = resourceType;
-            //debugger
             axios.post(this.agentEndpoint + '/send-command', putBody)
             .then( (response) =>  {
                 let outputText = ""

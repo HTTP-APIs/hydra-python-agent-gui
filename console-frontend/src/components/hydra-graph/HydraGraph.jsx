@@ -13,7 +13,6 @@ const styles = theme => ({
 class HydraGraph extends React.Component {
 
     componentDidMount(){
-        debugger
         let { DataSet, Network } = require('visjs-network');
 
         // Create Node and Edge Datasets 
