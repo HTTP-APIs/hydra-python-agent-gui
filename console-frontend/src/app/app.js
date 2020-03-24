@@ -66,8 +66,9 @@ class AgentGUI extends React.Component {
         }, () => this.render())
       });
   }
-  selectNode=(Index)=>{
-  this.child.current.selectEndpoint(Index);
+  selectNode=(selectedRequest)=>{
+  console.log(selectedRequest.operation);
+  this.child.current.selectEndpoint(selectedRequest.Index,selectedRequest.operation);
   }
   toggleGraph(){
     if(this.state.hidden){
