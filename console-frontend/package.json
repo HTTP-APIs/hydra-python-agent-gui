@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.3.1",
-    "@material-ui/icons": "^4.2.1",
-    "axios": "^0.19.0",
-    "node-sass": "^4.12.0",
-    "react": "^16.8.6",
+    "@material-ui/core": "^4.9.7",
+    "@material-ui/icons": "^4.9.1",
+    "axios": "^0.19.2",
+    "node-sass": "^4.13.1",
+    "react": "^16.13.0",
     "react-custom-scrollbars": "^4.2.1",
-    "react-dom": "^16.8.6",
+    "react-dom": "^16.13.0",
     "react-scripts": "3.0.1",
-    "visjs-network": "^4.24.10"
+    "visjs-network": "^4.24.11"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,5 +33,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "The React Frontend is divided in three main components.",
+  "main": "index.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
 }

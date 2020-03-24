@@ -34,12 +34,14 @@ const styles = theme => ({
 class AgentGUI extends React.Component {
   constructor(props) {
     super(props);
+    this.child = React.createRef();
     this.state = {
       consoleWidth: 6, 
       hidden: false, 
       classes: null,
       apidocGraph: {edges: null, nodes: null},
-      serverURL: "http://localhost:8080/serverapi/"
+      serverURL: "http://localhost:8080/serverapi/",
+      selectedNodeIndex: null
     }
 
     // Empty when hosted using flask
@@ -64,7 +66,9 @@ class AgentGUI extends React.Component {
         }, () => this.render())
       });
   }
-
+  selectNode=(Index)=>{
+  this.child.current.selectEndpoint(Index);
+  }
   toggleGraph(){
     if(this.state.hidden){
       this.setState({
@@ -153,7 +157,11 @@ class AgentGUI extends React.Component {
                   />
               </Grid>
               <HydraGraph
-                apidocGraph={this.state.apidocGraph}>
+                apidocGraph={this.state.apidocGraph}
+                serverUrl={this.state.serverURL}
+                hydraClasses={this.state.classes}
+                selectNode={this.selectNode}> 
+                
               </HydraGraph>
             </Grid>
     
@@ -162,6 +170,7 @@ class AgentGUI extends React.Component {
                 backgroundColor={GuiTheme.palette.primary.dark}
               ></NavBar> 
               <HydraConsole
+                ref={this.child}
                 serverUrl={this.state.serverURL}
                 hydraClasses={this.state.classes}
                 color='primary' ></HydraConsole>
