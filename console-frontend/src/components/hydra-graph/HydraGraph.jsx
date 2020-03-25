@@ -50,7 +50,7 @@ class HydraGraph extends React.Component {
         let check =0;
         let endpoints=null;
         
-        for(var index in this.props.hydraClasses){
+        for(let index in this.props.hydraClasses){
           if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
             }
@@ -183,7 +183,6 @@ network.on("hoverNode", function(event){
                 }
 });
    
-
     }
 
    render() {

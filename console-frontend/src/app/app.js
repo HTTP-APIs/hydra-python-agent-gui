@@ -85,14 +85,12 @@ class AgentGUI extends React.Component {
   }
 
   handleChangeServerURL(e){
-    debugger
     this.setState({
       serverURL: e.target.value,
     })
   }
 
   submitServerURL(e){
-    debugger
     axios.post(this.agentEndpoint + "/start-agent" , {url: this.state.serverURL})
     .then( (successUpdate) => {
       axios.get(this.agentEndpoint + "/hydra-doc")
