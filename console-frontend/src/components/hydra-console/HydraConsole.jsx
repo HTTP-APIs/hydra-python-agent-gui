@@ -141,9 +141,8 @@ class HydraConsole extends React.Component {
         super(props);
         this.child = React.createRef();
         let endpoints = null;
-        let classesMapping = []
+        const classesMapping = []
         this.agentEndpoint = ""
-        let selectedOperationIndex = 0
 
         // util variables
         this.temporaryEndpoint = null;
@@ -153,7 +152,7 @@ class HydraConsole extends React.Component {
         this.getURL = true;
         
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
-        for(let index in this.props.hydraClasses){
+        for(const index in this.props.hydraClasses){
             classesMapping[this.props.hydraClasses[index]['@id']] = this.props.hydraClasses[index];
             if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
@@ -163,12 +162,12 @@ class HydraConsole extends React.Component {
         // Initializing empty array with all properties in the ApiDoc
         let classesProperties = {}
         let resourcesIDs = {}
-        for( let auxClass in classesMapping){
+        for(const auxClass in classesMapping){
             classesProperties[classesMapping[auxClass]['@id']] = {}
             // Creating the array that will maintain the Resources IDs
             resourcesIDs[classesMapping[auxClass]['@id']] = {}
             resourcesIDs[classesMapping[auxClass]['@id']]['ResourceID'] = "" 
-            for( let auxProperty in  classesMapping[auxClass].supportedProperty ) {
+            for( const auxProperty in  classesMapping[auxClass].supportedProperty ) {
                 classesProperties[classesMapping[auxClass]['@id']][
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
             }
@@ -255,7 +254,7 @@ class HydraConsole extends React.Component {
         // Boolean variable that says we will fetch by resource type
         this.getURL = false;
 
-        let auxProperties = Object.assign({}, this.state.properties);
+        const auxProperties = Object.assign({}, this.state.properties);
         auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
        
         localStorage.setItem('properties', JSON.stringify(auxProperties))
@@ -269,8 +268,7 @@ class HydraConsole extends React.Component {
         // Fetch will work by URL
         this.getURL = true;
 
-        console.log(e.target.name +" "+ e.target.value)
-        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
 
         localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
@@ -282,12 +280,12 @@ class HydraConsole extends React.Component {
 
     clearAllInputs(e) {
         // Will clear the current endpoints input 
-        let auxProperties = Object.assign({}, this.state.properties);
+        const auxProperties = Object.assign({}, this.state.properties);
         Object.keys(auxProperties[this.temporaryEndpoint]).map(name => {
             auxProperties[this.temporaryEndpoint][name] = ""
         })
 
-        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         Object.keys(resourcesIDs).map(name => {
             resourcesIDs[name]['ResourceID'] = ""
         })
@@ -305,7 +303,7 @@ class HydraConsole extends React.Component {
     setResourceID(name, value) {
         // This is a ulitlity method to set the Resource Field id from clicking on the output link in output console
         this.getURL = true;
-        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[name]['ResourceID'] = value.split('/').pop();
 
         localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
@@ -448,8 +446,8 @@ class HydraConsole extends React.Component {
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
-        let filteredProperties = {}
-        for(let property in properties){
+        const filteredProperties = {}
+        for(const property in properties){
             if(properties[property] !== ""){
                 filteredProperties[property] = properties[property];
             }
@@ -583,12 +581,12 @@ class HydraConsole extends React.Component {
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
        
-        let selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
+        const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
         const selectedOperation = selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
         this.selectedOperation = selectedOperation;
         
-        let stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
+        const stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
         
         let rawCommand = "";
         if(this.getURL){

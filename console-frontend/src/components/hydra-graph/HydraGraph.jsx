@@ -1,8 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/styles';
-// eslint-disable-next-line
 import { DataSet, Network } from 'visjs-network';
-import { node, func } from 'prop-types';
+
 
 const styles = theme => ({
     graphContainer: {
@@ -15,26 +14,24 @@ class HydraGraph extends React.Component {
     
     constructor(props) {
         super(props);
-
     }
+
     componentDidMount(){
-        debugger
-        let { DataSet, Network } = require('visjs-network');
-        let self = this;
+        const self = this;
         // Create Node and Edge Datasets 
-        let nodes = new DataSet(this.props.apidocGraph.nodes)
-        let edges = new DataSet(this.props.apidocGraph.edges)
+        const nodes = new DataSet(this.props.apidocGraph.nodes)
+        const edges = new DataSet(this.props.apidocGraph.edges)
     
         // Get reference to the mynetwork div
-        let container = document.getElementById('mynetwork');
+        const container = document.getElementById('mynetwork');
         
-        let data = {
+        const data = {
             nodes: nodes,
             edges: edges
         };
         
         // See vis.js network options for more details on how to use this
-        let options = {
+        const options = {
             interaction: { hover: true },
             nodes:{
             color: {
@@ -50,37 +47,33 @@ class HydraGraph extends React.Component {
 
         let endpoints=null;
         
-        for(let index in this.props.hydraClasses){
+        for(const index in this.props.hydraClasses){
           if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
             }
         }
 
-        let network = new Network(container, data, options);
+        const network = new Network(container, data, options);
         this.selectedNode=function(e){
             this.props.selectNode(e)
         }
         network.on("select", function(event){
-            let { nodes, edges } =event;
-            let element_array= Object.keys(data.nodes._data).map(function (key) { 
-            return data.nodes._data[key]; 
-       }); 
-          
-         element_array.forEach(element=>{
-                
-                if (element.id==nodes[0])
-                {
+            const { nodes} =event;
+            const element_array= Object.keys(data.nodes._data).map(function (key) { 
+                return data.nodes._data[key]; 
+            }); 
+
+            element_array.map((element)=>{
+                if (element.id==nodes[0]) {
                   endpoint = element;
                 }
-            });
-       let i=0;
-       endpoints.forEach(endpoints=>{
-              if(endpoints.property.label==endpoint.label)
-                {
+            })
+          
+            endpoints.map((endpoints, i)=>{
+                if(endpoints.property.label==endpoint.label) {
                   self.selectedNode(i)    
                  }
-              i+=1;    
-           })
+            })
          
         });
    

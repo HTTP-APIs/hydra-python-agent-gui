@@ -47,9 +47,9 @@ class PropertiesEditor extends React.Component {
     }
 
     generateProperties(){
-        let fields = []
+        const fields = []
     
-        for(let property in this.props.properties){
+        for(const property in this.props.properties){
             fields.push(this.generateField(property, null));
         }
         return fields;
