@@ -19,22 +19,22 @@ class HydraGraph extends React.Component {
     }
     componentDidMount(){
         debugger
-        var { DataSet, Network } = require('visjs-network');
-        var self = this;
+        let { DataSet, Network } = require('visjs-network');
+        let self = this;
         // Create Node and Edge Datasets 
-        var nodes = new DataSet(this.props.apidocGraph.nodes)
-        var edges = new DataSet(this.props.apidocGraph.edges)
+        let nodes = new DataSet(this.props.apidocGraph.nodes)
+        let edges = new DataSet(this.props.apidocGraph.edges)
     
         // Get reference to the mynetwork div
-        var container = document.getElementById('mynetwork');
+        let container = document.getElementById('mynetwork');
         
-        var data = {
+        let data = {
             nodes: nodes,
             edges: edges
         };
         
         // See vis.js network options for more details on how to use this
-        var options = {
+        let options = {
             interaction: { hover: true },
             nodes:{
             color: {
@@ -46,23 +46,23 @@ class HydraGraph extends React.Component {
         };
         // Create a network
         // eslint-disable-next-line
-        var endpoint;
+        let endpoint;
 
-        var endpoints=null;
+        let endpoints=null;
         
-        for(var index in this.props.hydraClasses){
+        for(let index in this.props.hydraClasses){
           if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
             }
         }
 
-        var network = new Network(container, data, options);
+        let network = new Network(container, data, options);
         this.selectedNode=function(e){
             this.props.selectNode(e)
         }
         network.on("select", function(event){
-            var { nodes, edges } =event;
-         var element_array= Object.keys(data.nodes._data).map(function (key) { 
+            let { nodes, edges } =event;
+            let element_array= Object.keys(data.nodes._data).map(function (key) { 
             return data.nodes._data[key]; 
        }); 
           
@@ -73,7 +73,7 @@ class HydraGraph extends React.Component {
                   endpoint = element;
                 }
             });
-       var i=0;
+       let i=0;
        endpoints.forEach(endpoints=>{
               if(endpoints.property.label==endpoint.label)
                 {
@@ -84,7 +84,6 @@ class HydraGraph extends React.Component {
          
         });
    
-
     }
 
    render() {

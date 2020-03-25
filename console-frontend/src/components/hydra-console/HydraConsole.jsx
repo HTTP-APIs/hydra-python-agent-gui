@@ -140,8 +140,8 @@ class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
-        var endpoints = null;
-        var classesMapping = []
+        let endpoints = null;
+        let classesMapping = []
         this.agentEndpoint = ""
         let selectedOperationIndex = 0
 
@@ -153,7 +153,7 @@ class HydraConsole extends React.Component {
         this.getURL = true;
         
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
-        for(var index in this.props.hydraClasses){
+        for(let index in this.props.hydraClasses){
             classesMapping[this.props.hydraClasses[index]['@id']] = this.props.hydraClasses[index];
             if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
@@ -161,14 +161,14 @@ class HydraConsole extends React.Component {
         }
 
         // Initializing empty array with all properties in the ApiDoc
-        var classesProperties = {}
-        var resourcesIDs = {}
-        for( var auxClass in classesMapping){
+        let classesProperties = {}
+        let resourcesIDs = {}
+        for( let auxClass in classesMapping){
             classesProperties[classesMapping[auxClass]['@id']] = {}
             // Creating the array that will maintain the Resources IDs
             resourcesIDs[classesMapping[auxClass]['@id']] = {}
             resourcesIDs[classesMapping[auxClass]['@id']]['ResourceID'] = "" 
-            for( var auxProperty in  classesMapping[auxClass].supportedProperty ) {
+            for( let auxProperty in  classesMapping[auxClass].supportedProperty ) {
                 classesProperties[classesMapping[auxClass]['@id']][
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
             }
@@ -448,8 +448,8 @@ class HydraConsole extends React.Component {
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
-        var filteredProperties = {}
-        for(var property in properties){
+        let filteredProperties = {}
+        for(let property in properties){
             if(properties[property] !== ""){
                 filteredProperties[property] = properties[property];
             }
@@ -458,7 +458,7 @@ class HydraConsole extends React.Component {
         const resourceType = this.selectedEndpoint.property.label.replace("Collection", "")
 
         if(this.selectedOperation.method.toLowerCase() === 'get'){
-            var getBody = null
+            let getBody = null
             if(this.getURL){
                 getBody = {
                     method: 'get',
@@ -485,7 +485,7 @@ class HydraConsole extends React.Component {
               return;
         }
         else if(this.selectedOperation.method.toLowerCase() === 'put'){
-            var putBody = null;
+            let putBody = null;
             putBody = {
                 method: 'put',
                 url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
@@ -493,7 +493,6 @@ class HydraConsole extends React.Component {
                 new_object: filteredProperties,
             }
             filteredProperties['@type'] = resourceType;
-            //debugger
             axios.post(this.agentEndpoint + '/send-command', putBody)
             .then( (response) =>  {
                 let outputText = ""
@@ -508,7 +507,7 @@ class HydraConsole extends React.Component {
             return
         }
         else if(this.selectedOperation.method.toLowerCase() === 'post'){
-            var postBody = null;
+            let postBody = null;
             postBody = {
                 method: 'post',
                 url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
@@ -529,7 +528,7 @@ class HydraConsole extends React.Component {
             });
             return
         }else if(this.selectedOperation.method.toLowerCase() === 'delete'){
-            var deleteBody = null;
+            let deleteBody = null;
             deleteBody = {
                 method: 'delete',
                 url: this.props.serverUrl + this.selectedEndpoint.property.label +
@@ -584,14 +583,14 @@ class HydraConsole extends React.Component {
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
        
-        var selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
+        let selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
         const selectedOperation = selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
         this.selectedOperation = selectedOperation;
         
-        var stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
+        let stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
         
-        var rawCommand = "";
+        let rawCommand = "";
         if(this.getURL){
             rawCommand = "agent." + this.selectedOperation.method.toLowerCase() +
                          "(\"" + this.props.serverUrl +
