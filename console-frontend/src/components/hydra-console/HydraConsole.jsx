@@ -221,7 +221,7 @@ class HydraConsole extends React.Component {
         }
     }
 
-    selectEndpoint(endpointIndex) {
+    selectEndpoint(endpointIndex, op="GET") {
         const selectedEndpoint = this.state.endpoints[endpointIndex];
         this.selectedEndpoint = selectedEndpoint;
         this.child.current.selectButton(endpointIndex);
@@ -230,19 +230,19 @@ class HydraConsole extends React.Component {
         this.temporaryEndpoint = temporaryEndpoint;
 
         const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];       
-        const operations = selectedHydraClass.supportedOperation
-        
-
+        const operations = selectedHydraClass.supportedOperation;
         let selectedOperationIndex = 0;
         operations.map((operation, index) => {
-            if(operation.method == "GET")
+            if(operation.method == op)
                 selectedOperationIndex = index
         })
-
+    
         this.setState({
                 selectedEndpointIndex: endpointIndex,
                 selectedOperationIndex: selectedOperationIndex
         })
+     
+
     }
 
     selectOperation(operationIndex) {
