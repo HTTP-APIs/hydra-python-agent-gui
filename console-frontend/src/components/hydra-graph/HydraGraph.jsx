@@ -54,58 +54,51 @@ class HydraGraph extends React.Component {
         }
 
         
-        let network = new Network(container, data, options);
+        const network = new Network(container, data, options);
         this.selectedNode=function(e){
             this.props.selectNode(e)
         }
-network.on("hoverNode", function(event){
-         check=0;
-         let node = event.node;
-         let element_array= Object.keys(data.nodes._data).map(function (key) { 
-            return data.nodes._data[key]; 
-       }); 
+        network.on("hoverNode", function(event){
+                check=0;
+                const node = event.node;
+                const element_array= Object.keys(data.nodes._data).map(function (key) { 
+                    return data.nodes._data[key]; 
+        }); 
    
-   element_array.forEach(element=>{
-                
-        if (element.id==node)
-         {
-           endpoint = element;
-           endpoints.forEach(endpoints=>{
-            if(endpoints.property.label==endpoint.label)
-              {
-                 check =1;  
-                 
-               }
-         
-            })
 
-        }
-      });
-
-   if(check!=1){
-     
-        let edges_array= Object.keys(data.edges._data).map(function (key) { 
-            return data.edges._data[key]; 
-       });  
-       
-       
-       edges_array.forEach(edge=>{
-           if(edge.to==node && edge.label=="supportedOp")
-           { 
-              
-              element_array.forEach(element=>{
-                  if(element.id==edge.from)
-                  {  
-                       endpoint=element;
-                       
-                       endpoints.forEach(endpoints=>{
-                           if(endpoints.property.label==endpoint.label)
-                           {
-                               check=1;
-                             
-                           }
-                       }) } }) } })
+        element_array.map((element)=>{
+            if(element.id == node) {
+                endpoint = element;
+                endpoints.map((ept) => {
+                    if(ept.property.label == endpoint.label) {
+                        check = 1;
+                    }
+                })
             }
+        })
+
+        if(check!=1){
+     
+            const edges_array= Object.keys(data.edges._data).map(function (key) { 
+                return data.edges._data[key]; 
+            });  
+        
+
+            edges_array.map((edge)=>{
+                if(edge.to == node && edge.label=="supportedOp"){
+                    element_array.map((element)=>{
+                        if(element.id == edge.from) {
+                            endpoint = element;
+                            endpoints.map((ept)=>{
+                                if(ept.property.label == endpoint.label){
+                                    check = 1;
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
        
         if(check==1)
         {   
@@ -127,8 +120,8 @@ network.on("hoverNode", function(event){
         network.on("select", function(event){
             check=0;
             let selectedRequest;
-            let { nodes, edges } =event;
-            let element_array= Object.keys(data.nodes._data).map(function (key) { 
+            const { nodes } =event;
+            const element_array= Object.keys(data.nodes._data).map(function (key) { 
             return data.nodes._data[key]; 
        }); 
           
@@ -153,8 +146,8 @@ network.on("hoverNode", function(event){
            })
            if(check!=1){
         
-            let operation = endpoint.label;
-            let edges_array= Object.keys(data.edges._data).map(function (key) { 
+            const operation = endpoint.label;
+            const edges_array= Object.keys(data.edges._data).map(function (key) { 
                 return data.edges._data[key]; 
            });  
            
