@@ -7,6 +7,7 @@ const styles = theme => ({
     graphContainer: {
         width: '100%',
         height: '82vh',
+        backgroundColor: '#EEEEEE',
     },
 });
 
@@ -16,7 +17,7 @@ class HydraGraph extends React.Component {
         debugger
         var { DataSet, Network } = require('visjs-network');
 
-        // Create Node and Edge Datasets 
+        // Create Node and Edge Datasets
         var nodes = new DataSet(this.props.apidocGraph.nodes)
         var edges = new DataSet(this.props.apidocGraph.edges)
 
