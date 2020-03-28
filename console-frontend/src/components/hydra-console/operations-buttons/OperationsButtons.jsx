@@ -10,7 +10,7 @@ const styles = theme => ({
 class OperationsButtons extends React.Component {
     constructor(props) {
         super(props);
-        let buttons = []
+        const buttons = []
         
         let selectedButton = 0;
 
@@ -31,7 +31,7 @@ class OperationsButtons extends React.Component {
     }
 
     selectButton(clickedButton){
-        let updatedButtons = this.state.buttons.slice();
+        const updatedButtons = this.state.buttons.slice();
         updatedButtons[this.state.selectedButton] = false;
         updatedButtons[clickedButton] = true;
         this.setState({
@@ -45,7 +45,7 @@ class OperationsButtons extends React.Component {
         
         const { classes } = this.props;
 
-        let buttons = operationsArray.map( (currProperty, index) => {
+        const buttons = operationsArray.map( (currProperty, index) => {
             const operation = this.props.operations[currProperty].method 
             return(<Fab
                 key={currProperty}
@@ -59,7 +59,7 @@ class OperationsButtons extends React.Component {
 
     componentDidUpdate(){
         if(this.state.selectedButton !== this.props.selectedOperationIndex){
-            let updatedButtons = this.state.buttons.slice();
+            const updatedButtons = this.state.buttons.slice();
             updatedButtons[this.state.selectedButton] = false;
             updatedButtons[this.props.selectedOperationIndex] = true;
             this.setState({

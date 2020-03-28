@@ -16,13 +16,13 @@ const styles = theme => ({
 class EndpointsButtons extends React.Component {
     constructor(props) {
         super(props);
-        let buttons = []
+        const buttons = []
 
         Object.keys(this.props.endpoints).forEach( (endpoint) => {
             buttons[endpoint] = false
         })
 
-        let selectedButton = 0;
+        const selectedButton = 0;
         buttons[ selectedButton ] = true;
         this.state = {
             buttons: buttons,
@@ -31,7 +31,7 @@ class EndpointsButtons extends React.Component {
     }
 
     selectButton(clickedButton){
-        let updatedButtons = this.state.buttons.slice();
+        const updatedButtons = this.state.buttons.slice();
         updatedButtons[this.state.selectedButton] = false;
         updatedButtons[clickedButton] = true;
         this.setState({
@@ -45,7 +45,7 @@ class EndpointsButtons extends React.Component {
         const endpointsArray = Object.keys(this.props.endpoints);
         const { classes } = this.props;
 
-        let buttons = endpointsArray.map( (currProperty, index) => {
+        const buttons = endpointsArray.map( (currProperty, index) => {
             const labelEndpoint = this.props.endpoints[currProperty].property.label 
             return(<Button
                 key={currProperty}

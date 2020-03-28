@@ -1,0 +1,5 @@
+node_modules/
+build/
+src/service-worker.js
+*.test.js
+*.test.jsx
