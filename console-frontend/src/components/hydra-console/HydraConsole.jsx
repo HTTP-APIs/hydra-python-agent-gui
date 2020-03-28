@@ -323,7 +323,8 @@ class HydraConsole extends React.Component {
                 return(
                 <div className={classes.objectValue}>
                     <div className={classes.objectValueKey}>{key} :</div>
-                    <div className={classes.objectValueKeyValueLink} onClick={(e) => this.setResourceID(this.temporaryEndpoint, value[key])}>
+                    <div className={classes.objectValueKeyValueLink} 
+                         onClick={(e) => this.setResourceID(this.temporaryEndpoint, value[key])}>
                         {value[key]},
                     </div>
                 </div>
@@ -460,7 +461,8 @@ class HydraConsole extends React.Component {
             if(this.getURL){
                 getBody = {
                     method: 'get',
-                    url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" + this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID']
+                    url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
+                    this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID']
                 }
             }else{    
                 getBody = {

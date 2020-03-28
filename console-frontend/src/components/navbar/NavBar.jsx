@@ -50,10 +50,14 @@ const NavBar = (props) => {
                     
                     <div style={toolbar.centeringSpace}></div>
                     {props.onClick && (
-                    <img src={logo} onClick={ () => window.open('http://www.hydraecosystem.org/')}  className={classes.hydraEcoLogo} alt="logo" />
+                    <img src={logo}
+                         onClick={ () => window.open('http://www.hydraecosystem.org/')}
+                         className={classes.hydraEcoLogo} alt="logo" />
                     )}
                     {props.onClick && (
-                    <img src={github_logo} onClick={ () => window.open('https://github.com/HTTP-APIs/hydra-python-agent-gui')}  className={classes.hydraEcoLogo} alt="logo" />
+                    <img src={github_logo} onClick={ () => 
+                        window.open('https://github.com/HTTP-APIs/hydra-python-agent-gui')
+                    } className={classes.hydraEcoLogo} alt="logo" />
                     )}
                 </Toolbar>
             </AppBar>
