@@ -7,6 +7,7 @@ const styles = theme => ({
     graphContainer: {
         width: '100%',
         height: '82vh',
+        backgroundColor: '#EEEEEE',
     },
 });
 
