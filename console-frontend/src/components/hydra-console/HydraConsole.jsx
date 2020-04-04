@@ -42,11 +42,7 @@ const CssTextField = withStyles({
 // Css Styles to the Components
 const styles = theme => ({
     outContainer: {
-        height: '87vh',
         backgroundColor: GuiTheme.palette.primary.dark,
-        [theme.breakpoints.down('md')]: {
-            height: '160vh'
-        }
     },
     propertiesContainer: {
         maxHeight: '40vh',
@@ -71,7 +67,7 @@ const styles = theme => ({
         flex: '100',
     },
     outputContainer: {
-        height: '40vh',
+        minHeight: '300px',
         width: '90%',
         backgroundColor: GuiTheme.palette.primary.light,
         whiteSpace: 'pre',
@@ -95,13 +91,6 @@ const styles = theme => ({
         color: '#000',
         borderColor: '#0f0'
     },
-    sendRequest: {
-        border: 0,
-        borderRadius: 3,
-        boxShadow: '0 3px 5px 2px rgba(255, 255, 255, .3)',
-        height: 48,
-        width: '22%',
-    },
     deleteIconButton: {
         marginLeft: '60% !important',
         marginBottom: '10px',
@@ -111,16 +100,49 @@ const styles = theme => ({
             backgroundColor: GuiTheme.palette.secondary.light,
             color: GuiTheme.palette.primary.dark,
         },
+    },
+    outputConsoleBraces: {
+        marginLeft: '20px'
+    },
+    objectValue: {
+        display: 'flex'
+    },
+    objectValueKeyValueLink: {
+        marginLeft: '10px',
+        color: '#0276FD',
+        cursor: 'pointer'
+    },
+    objectValueKey: {
+        marginLeft: '5px'
+    },
+    objectValueKeyValue: {
+        marginLeft: '10px'
     }
 });
+
+
+function isObject(value) {
+    // utility method that returns boolean value
+    return value && typeof value === "object" && value.constructor === Object;
+}
+  
+function isArray(value) {
+    // utility method that returns boolean value
+    return value && typeof value === "object" && value.constructor === Array;
+}
+  
+function isString(value) {
+    // utility method that returns boolean value
+    return typeof value === "string" || value instanceof String;
+}
 
 class HydraConsole extends React.Component {
     constructor(props) {
         super(props);
-        var endpoints = null;
-        var classesMapping = []
+        this.child = React.createRef();
+        let endpoints = null;
+        const classesMapping = []
         this.agentEndpoint = ""
-        let selectedOperationIndex = 0
 
         // util variables
         this.temporaryEndpoint = null;
@@ -130,7 +152,7 @@ class HydraConsole extends React.Component {
         this.getURL = true;
         
         // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
-        for(var index in this.props.hydraClasses){
+        for(const index in this.props.hydraClasses){
             classesMapping[this.props.hydraClasses[index]['@id']] = this.props.hydraClasses[index];
             if(this.props.hydraClasses[index]['@id'] === 'vocab:EntryPoint'){
               endpoints = this.props.hydraClasses[index].supportedProperty
@@ -138,14 +160,14 @@ class HydraConsole extends React.Component {
         }
 
         // Initializing empty array with all properties in the ApiDoc
-        var classesProperties = {}
-        var resourcesIDs = {}
-        for( var auxClass in classesMapping){
+        let classesProperties = {}
+        let resourcesIDs = {}
+        for(const auxClass in classesMapping){
             classesProperties[classesMapping[auxClass]['@id']] = {}
             // Creating the array that will maintain the Resources IDs
             resourcesIDs[classesMapping[auxClass]['@id']] = {}
             resourcesIDs[classesMapping[auxClass]['@id']]['ResourceID'] = "" 
-            for( var auxProperty in  classesMapping[auxClass].supportedProperty ) {
+            for( const auxProperty in  classesMapping[auxClass].supportedProperty ) {
                 classesProperties[classesMapping[auxClass]['@id']][
                     classesMapping[auxClass].supportedProperty[auxProperty].title] = ""
             }
@@ -198,26 +220,28 @@ class HydraConsole extends React.Component {
         }
     }
 
-    selectEndpoint(endpointIndex) {
+    selectEndpoint(endpointIndex, op="GET") {
         const selectedEndpoint = this.state.endpoints[endpointIndex];
         this.selectedEndpoint = selectedEndpoint;
+        this.child.current.selectButton(endpointIndex);
 
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
 
         const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];       
-        const operations = selectedHydraClass.supportedOperation
-
+        const operations = selectedHydraClass.supportedOperation;
         let selectedOperationIndex = 0;
         operations.map((operation, index) => {
-            if(operation.method == "GET")
+            if(operation.method == op)
                 selectedOperationIndex = index
         })
-
+    
         this.setState({
                 selectedEndpointIndex: endpointIndex,
                 selectedOperationIndex: selectedOperationIndex
         })
+     
+
     }
 
     selectOperation(operationIndex) {
@@ -230,7 +254,7 @@ class HydraConsole extends React.Component {
         // Boolean variable that says we will fetch by resource type
         this.getURL = false;
 
-        let auxProperties = Object.assign({}, this.state.properties);
+        const auxProperties = Object.assign({}, this.state.properties);
         auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
        
         localStorage.setItem('properties', JSON.stringify(auxProperties))
@@ -244,7 +268,7 @@ class HydraConsole extends React.Component {
         // Fetch will work by URL
         this.getURL = true;
 
-        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         resourcesIDs[e.target.name]['ResourceID'] = e.target.value;
 
         localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
@@ -256,12 +280,12 @@ class HydraConsole extends React.Component {
 
     clearAllInputs(e) {
         // Will clear the current endpoints input 
-        let auxProperties = Object.assign({}, this.state.properties);
+        const auxProperties = Object.assign({}, this.state.properties);
         Object.keys(auxProperties[this.temporaryEndpoint]).map(name => {
             auxProperties[this.temporaryEndpoint][name] = ""
         })
 
-        let resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
         Object.keys(resourcesIDs).map(name => {
             resourcesIDs[name]['ResourceID'] = ""
         })
@@ -276,12 +300,155 @@ class HydraConsole extends React.Component {
         })
     }
 
+    setResourceID(name, value) {
+        // This is a ulitlity method to set the Resource Field id from clicking on the output link in output console
+        this.getURL = true;
+        const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+        resourcesIDs[name]['ResourceID'] = value.split('/').pop();
 
+        localStorage.setItem('resourceIDs', JSON.stringify(resourcesIDs))
+        
+        this.setState({
+            resourcesIDs: resourcesIDs
+        })
+    }
+
+    printObjectValue = (value) => {
+        //  A helper method printObject() method to print its key value 
+        const classes = this.props.classes
+
+        return Object.keys(value).map(key => {        
+            if(key == '@id'){
+                // link has to be returned
+                return(
+                <div className={classes.objectValue}>
+                    <div className={classes.objectValueKey}>{key} :</div>
+                    <div className={classes.objectValueKeyValueLink} 
+                         onClick={(e) => this.setResourceID(this.temporaryEndpoint, value[key])}>
+                        {value[key]},
+                    </div>
+                </div>
+                )
+            }
+        
+            if (isString(value[key]))
+              return (
+                <div className={classes.objectValue}>
+                    <div className={classes.objectValueKey}>{key} :</div>
+                    <div className={classes.objectValueKeyValue}>{value[key]},</div>
+                </div>
+              );
+            if (isObject(value[key]))
+              return (
+                <div className={classes.objectValue}>
+                    <div className={classes.objectValueKey}>{key} :</div> 
+                    <div className={classes.objectValueKeyValue}>{this.printObject(value[key])}</div>
+                </div>
+              );
+            if (isArray(value[key]))
+              return (
+                <div className={classes.objectValue}>
+                    <div className={classes.objectValueKey}>{key} :</div> 
+                    <div className={classes.objectValueKeyValue}>{this.printArray(value[key])}</div>
+                </div>
+              );
+          });
+    }
+
+    printObject(value, isFirst=false) {
+        // Utility method to print key value pair of object
+        const classes = this.props.classes
+        
+       if(Object.keys(value).length == 0){
+           // empty object, &#123; is code for '{' and &125; is for '}'
+           return(
+               <div className={classes.emptyObject}>&#123; &#125;</div>
+           )
+       }
+
+       return(
+           <div className={classes.printObjectClass}>
+               <div>&#123;</div>
+                    <div className={classes.outputConsoleBraces}>
+                    {this.printObjectValue(value)}
+                    </div>
+                <div>&#125;{(!isFirst)?",":""}</div>
+           </div>
+       )
+ 
+     }
+     
+     printArrayValue = (value) => {
+         // A helper method for printArray() to print all the values inside the Array
+        const classes = this.props.classes
+        return value.map(v => {
+            if (isString(v))
+              return (
+                <div className={classes.arrayValue}>
+                   {v},
+                </div>
+              );
+            if (isObject(v))
+              return (
+                <div className={classes.arrayValue}>
+                    {this.printObject(v)}
+                </div>
+              );
+            if (isArray(v))
+              return (
+                <div className={classes.arrayValue}>
+                    {this.printArray(v)}
+                </div>
+              );
+            return null;
+          });
+     }
+
+     printArray = (value, isFirst=false) => {
+       // utility method to print values of array in output console
+        const classes = this.props.classes
+       if(value.length == 0){
+           // Empty Array
+           return (
+               <div className={classes.emptyArray}>[]</div>
+           )
+       }
+     
+       return(
+           <div className={classes.printArrayClass}>
+               <div>[</div>
+                    <div className={classes.outputConsoleBraces}>
+                        {this.printArrayValue(value)}
+                    </div>
+               <div>]{(!isFirst)?",":""}</div>
+           </div>
+       )
+     }
+     
+
+    convertOutput = data => {
+       // a generic method to print output on console of any response provided by the server
+       if (isArray(data)) {
+            return (
+                <div>
+                    {this.printArray(data, true)}
+                </div>
+          );
+       }
+       if (isObject(data)) {
+        return (
+            <div>
+                {this.printObject(data, true)}
+            </div>
+        );
+       }
+        return <div>{JSON.stringify(data, this.jsonStringifyReplacer, 8)}</div>
+     };
 
     sendCommand(){
         const properties = this.state.properties[this.temporaryEndpoint];
-        var filteredProperties = {}
-        for(var property in properties){
+        const filteredProperties = {}
+        for(const property in properties){
             if(properties[property] !== ""){
                 filteredProperties[property] = properties[property];
             }
@@ -290,11 +457,12 @@ class HydraConsole extends React.Component {
         const resourceType = this.selectedEndpoint.property.label.replace("Collection", "")
 
         if(this.selectedOperation.method.toLowerCase() === 'get'){
-            var getBody = null
+            let getBody = null
             if(this.getURL){
                 getBody = {
                     method: 'get',
-                    url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" + this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID']
+                    url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
+                    this.state.resourcesIDs[this.temporaryEndpoint]['ResourceID']
                 }
             }else{    
                 getBody = {
@@ -305,8 +473,10 @@ class HydraConsole extends React.Component {
             }
             axios.post(this.agentEndpoint + '/send-command', getBody)
               .then( (response) =>  {
+                let outputText = ""
+                outputText = this.convertOutput(response.data)
                 this.setState({
-                    outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+                    outputText,
                 })
               })
               .catch(function (error) {
@@ -315,7 +485,7 @@ class HydraConsole extends React.Component {
               return;
         }
         else if(this.selectedOperation.method.toLowerCase() === 'put'){
-            var putBody = null;
+            let putBody = null;
             putBody = {
                 method: 'put',
                 url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
@@ -323,11 +493,12 @@ class HydraConsole extends React.Component {
                 new_object: filteredProperties,
             }
             filteredProperties['@type'] = resourceType;
-            //debugger
             axios.post(this.agentEndpoint + '/send-command', putBody)
             .then( (response) =>  {
+                let outputText = ""
+                outputText = this.convertOutput(response.data)
               this.setState({
-                  outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+                  outputText,
               })
             })
             .catch(function (error) {
@@ -336,7 +507,7 @@ class HydraConsole extends React.Component {
             return
         }
         else if(this.selectedOperation.method.toLowerCase() === 'post'){
-            var postBody = null;
+            let postBody = null;
             postBody = {
                 method: 'post',
                 url: this.props.serverUrl + this.selectedEndpoint.property.label + "/" +
@@ -346,8 +517,10 @@ class HydraConsole extends React.Component {
             filteredProperties['@type'] = resourceType;
             axios.post(this.agentEndpoint + '/send-command', postBody)
             .then( (response) =>  {
+              let outputText = ""
+              outputText = this.convertOutput(response.data)
               this.setState({
-                  outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+                  outputText,
               })
             })
             .catch(function (error) {
@@ -355,7 +528,7 @@ class HydraConsole extends React.Component {
             });
             return
         }else if(this.selectedOperation.method.toLowerCase() === 'delete'){
-            var deleteBody = null;
+            let deleteBody = null;
             deleteBody = {
                 method: 'delete',
                 url: this.props.serverUrl + this.selectedEndpoint.property.label +
@@ -363,8 +536,10 @@ class HydraConsole extends React.Component {
             }
             axios.post(this.agentEndpoint + '/send-command', deleteBody)
             .then( (response) =>  {
+              let outputText = ""
+              outputText = this.convertOutput(response.data)
               this.setState({
-                  outputText: JSON.stringify(response.data, this.jsonStringifyReplacer, 8),
+                  outputText,
               })
             })
             .catch(function (error) {
@@ -378,8 +553,10 @@ class HydraConsole extends React.Component {
             filters: this.state.properties[this.temporaryEndpoint],
           })
           .then(function (response) {
+            let outputText = ""
+            outputText = this.convertOutput(response)
                 this.setState({
-                    outputText: response,
+                    outputText,
                 })
             console.log(response);
           })
@@ -406,14 +583,14 @@ class HydraConsole extends React.Component {
         const temporaryEndpoint = selectedEndpoint.property.range.replace("Collection", "")
         this.temporaryEndpoint = temporaryEndpoint;
        
-        var selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
+        const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
 
         const selectedOperation = selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
         this.selectedOperation = selectedOperation;
         
-        var stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
+        const stringProps = JSON.stringify(this.state.properties[temporaryEndpoint], this.jsonStringifyReplacer);
         
-        var rawCommand = "";
+        let rawCommand = "";
         if(this.getURL){
             rawCommand = "agent." + this.selectedOperation.method.toLowerCase() +
                          "(\"" + this.props.serverUrl +
@@ -427,18 +604,19 @@ class HydraConsole extends React.Component {
 
         return (
             <Grid container className={classes.outContainer} md={12}>
-                <Grid item md={4} xs={12} container
+                <Grid item xs={12} lg={5} container
                     direction="column"
                     justify="space-evenly"
                     alignItems="center">
                     <EndpointsButtons
+                        ref={this.child}
                         selectEndpoint={ (currProperty) => {
                             this.selectEndpoint(currProperty) }}
                         endpoints={this.state.endpoints}>   
                     </EndpointsButtons>
                 </Grid>
                 <Grid
-                    item md={2} xs={12} container
+                    item xs={12} lg={2} container
                     direction="column"
                     justify="space-evenly"
                     alignItems="center">
@@ -451,7 +629,7 @@ class HydraConsole extends React.Component {
                     </OperationsButtons>
                 </Grid>
                 <Grid
-                    item md={6} xs={12} container
+                    item xs={12} lg={5} container
                     direction="column"
                     justify="center"
                     alignItems="center">
@@ -523,7 +701,6 @@ class HydraConsole extends React.Component {
                     </Button>
                 </Grid>
                 <Grid item xs={12}
-                    spacing={5}
                     container
                     direction="column"
                     justify="center"

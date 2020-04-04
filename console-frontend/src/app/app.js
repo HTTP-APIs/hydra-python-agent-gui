@@ -1,5 +1,6 @@
 import React from 'react';
 import NavBar from '../components/navbar/NavBar';
+import Loader from '../components/loader/Loader'
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -19,7 +20,8 @@ const styles = theme => ({
     width: '100%',
     backgroundColor: GuiTheme.palette.primary.light,
     border: 10,
-    display: 'flex'
+    display: 'flex',
+    paddingBottom: 20
   },
   serverInput: {
       width: '75%',
@@ -33,12 +35,14 @@ const styles = theme => ({
 class AgentGUI extends React.Component {
   constructor(props) {
     super(props);
+    this.child = React.createRef();
     this.state = {
       consoleWidth: 6, 
       hidden: false, 
       classes: null,
       apidocGraph: {edges: null, nodes: null},
-      serverURL: "http://localhost:8080/serverapi/"
+      serverURL: "http://localhost:8080/serverapi/",
+      selectedNodeIndex: null,
     }
 
     // Empty when hosted using flask
@@ -51,7 +55,7 @@ class AgentGUI extends React.Component {
         this.setState({
           //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
           classes: res.data.supportedClass,
-          serverURL: res.data.serverURL.replace(/\/$/, "") + "/"
+          serverURL: res.data.serverURL.replace(/\/$/, "") + "/",
         }, () => this.render())
       });
 
@@ -63,7 +67,10 @@ class AgentGUI extends React.Component {
         }, () => this.render())
       });
   }
-
+  selectNode=(selectedRequest)=>{
+  console.log(selectedRequest.operation);
+  this.child.current.selectEndpoint(selectedRequest.Index,selectedRequest.operation);
+  }
   toggleGraph(){
     if(this.state.hidden){
       this.setState({
@@ -79,14 +86,12 @@ class AgentGUI extends React.Component {
   }
 
   handleChangeServerURL(e){
-    debugger
     this.setState({
       serverURL: e.target.value,
     })
   }
 
   submitServerURL(e){
-    debugger
     axios.post(this.agentEndpoint + "/start-agent" , {url: this.state.serverURL})
     .then( (successUpdate) => {
       axios.get(this.agentEndpoint + "/hydra-doc")
@@ -154,7 +159,11 @@ class AgentGUI extends React.Component {
                   />
               </Grid>
               <HydraGraph
-                apidocGraph={this.state.apidocGraph}>
+                apidocGraph={this.state.apidocGraph}
+                serverUrl={this.state.serverURL}
+                hydraClasses={this.state.classes}
+                selectNode={this.selectNode}> 
+                
               </HydraGraph>
             </Grid>
     
@@ -163,6 +172,7 @@ class AgentGUI extends React.Component {
                 backgroundColor={GuiTheme.palette.primary.dark}
               ></NavBar> 
               <HydraConsole
+                ref={this.child}
                 serverUrl={this.state.serverURL}
                 hydraClasses={this.state.classes}
                 color='primary' ></HydraConsole>
@@ -172,7 +182,7 @@ class AgentGUI extends React.Component {
       );
     }else{
       // This should return a loading screen
-      return (<div className="lds-circle"><div></div></div>)
+      return (<Loader />)
     }
   }
 }
