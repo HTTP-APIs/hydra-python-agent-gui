@@ -1,5 +1,6 @@
 import React from 'react';
 import NavBar from '../components/navbar/NavBar';
+import Loader from '../components/loader/Loader'
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -41,7 +42,7 @@ class AgentGUI extends React.Component {
       classes: null,
       apidocGraph: {edges: null, nodes: null},
       serverURL: "http://localhost:8080/serverapi/",
-      selectedNodeIndex: null
+      selectedNodeIndex: null,
     }
 
     // Empty when hosted using flask
@@ -54,7 +55,7 @@ class AgentGUI extends React.Component {
         this.setState({
           //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
           classes: res.data.supportedClass,
-          serverURL: res.data.serverURL.replace(/\/$/, "") + "/"
+          serverURL: res.data.serverURL.replace(/\/$/, "") + "/",
         }, () => this.render())
       });
 
@@ -181,7 +182,7 @@ class AgentGUI extends React.Component {
       );
     }else{
       // This should return a loading screen
-      return (<div className="lds-circle"><div></div></div>)
+      return (<Loader />)
     }
   }
 }
