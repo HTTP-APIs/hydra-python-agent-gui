@@ -20,7 +20,8 @@ def serve(path):
     """Default endpoint, it serves the built static React App
     :return: Served file
     """
-    if path != "" and os.path.exists(app.static_folder + path):
+    file_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(file_path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
