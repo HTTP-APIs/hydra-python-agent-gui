@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import GuiTheme from '../../app/gui-theme';
 import { withStyles } from '@material-ui/styles';
 import axios from 'axios';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 // Custom imports
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -43,6 +44,7 @@ const CssTextField = withStyles({
 const styles = theme => ({
     outContainer: {
         backgroundColor: GuiTheme.palette.primary.dark,
+        paddingTop: 20
     },
     propertiesContainer: {
         maxHeight: '40vh',
@@ -92,14 +94,18 @@ const styles = theme => ({
         borderColor: '#0f0'
     },
     deleteIconButton: {
-        marginLeft: '60% !important',
+        marginLeft: '50% !important',
         marginBottom: '10px',
+        height: "50px",
         backgroundColor: GuiTheme.palette.primary.light,
         color: GuiTheme.palette.primary.dark,
         '&:hover': {
             backgroundColor: GuiTheme.palette.secondary.light,
             color: GuiTheme.palette.primary.dark,
         },
+    },
+    sendRequest: {
+        height: "50px",
     },
     outputConsoleBraces: {
         marginLeft: '20px'
@@ -633,11 +639,14 @@ class HydraConsole extends React.Component {
                     direction="column"
                     justify="center"
                     alignItems="center">
-                    <Button aria-label="delete" 
+                    <Button
                         size="medium"
-                        variant="contained" 
+                        variant="contained"
+                        color="secondary"
                         className={classes.deleteIconButton}
-                        onClick={(e) => this.clearAllInputs(e)}>
+                        onClick={(e) => this.clearAllInputs(e)}
+                        startIcon={<DeleteIcon />}
+                    >
                         CLEAR
                     </Button>
                     <Grid className={classes.propertiesContainer}

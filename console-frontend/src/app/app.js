@@ -21,7 +21,8 @@ const styles = theme => ({
     backgroundColor: GuiTheme.palette.primary.light,
     border: 10,
     display: 'flex',
-    paddingBottom: 20
+    paddingBottom: 20,
+    paddingTop: 15
   },
   serverInput: {
       width: '75%',
@@ -133,6 +134,7 @@ class AgentGUI extends React.Component {
                   direction="row"
                   justify="center"
                   alignItems="center"
+                  pt={100}
                   className={classes.serverInputContainer}>
                   <InputLabel htmlFor="server_url_input">Server URL:</InputLabel>
                   <Input
