@@ -1,5 +1,6 @@
 import React from 'react'
 import { withStyles } from '@material-ui/styles';
+import logo from '../../assets/images/hydra_eco_logo.png'
 
 const styles = theme => ({
     image: {
@@ -25,7 +26,7 @@ const Loader = (props) => {
     const classes = props.classes
     return(
         <div className={classes.loader}>
-            <img className={classes.image} src="https://avatars1.githubusercontent.com/u/24541949?s=100&v=4" alt="Loader Image"  />
+            <img className={classes.image} src={logo} alt="Loader Image"  />
         </div>
     )
 }

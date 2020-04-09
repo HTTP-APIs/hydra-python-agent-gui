@@ -37,7 +37,10 @@
   },
   "description": "The React Frontend is divided in three main components.",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2"
+  },
   "author": "",
   "license": "ISC"
 }
