@@ -22,9 +22,9 @@ class HydraGraph extends React.Component {
         // Create Node and Edge Datasets 
         const nodes = new DataSet(this.props.apidocGraph.nodes)
         const edges = new DataSet(this.props.apidocGraph.edges)
-    
+
         // Get reference to the mynetwork div
-        const container = document.getElementById('mynetwork');
+        const container = document.getElementById('mynetwork') || document.createElement('div');;
         
         const data = {
             nodes: nodes,
@@ -118,61 +118,69 @@ class HydraGraph extends React.Component {
 
        
 
-        network.on("select", function(event){
-            check=0;
+        network.on("select", function(event) {
+            check = 0;
             let selectedRequest;
-            const { nodes } =event;
-            const element_array= Object.keys(data.nodes._data).map(function (key) { 
-            return data.nodes._data[key]; 
-       }); 
-          
-         element_array.forEach(element=>{
-                
-                if (element.id==nodes[0])
-                {
-                  endpoint = element;
+            const {
+                nodes
+            } = event;
+            const element_array = Object.keys(data.nodes._data).map(function(key) {
+                return data.nodes._data[key];
+            });
+        
+            element_array.forEach(element => {
+        
+                if (element.id == nodes[0]) {
+                    endpoint = element;
                 }
             });
-      
-       let i=0;
-       endpoints.forEach(endpoints=>{
-              if(endpoints.property.label==endpoint.label)
-                { 
-                  check=1;
-                  selectedRequest={Index:i, operation:"GET"}
-                  self.selectedNode(selectedRequest);    
-                    
-                 }
-              i+=1;    
-           })
-           if(check!=1){
         
-            const operation = endpoint.label;
-            const edges_array= Object.keys(data.edges._data).map(function (key) { 
-                return data.edges._data[key]; 
-           });  
-           
-           
-           edges_array.forEach(edge=>{
-               if(edge.to==nodes[0] && edge.label=="supportedOp")
-               { 
-                  
-                  element_array.forEach(element=>{
-                      if(element.id==edge.from)
-                      {  
-                           endpoint=element;
-                           i=0;
-                           endpoints.forEach(endpoints=>{
-                               if(endpoints.property.label==endpoint.label)
-                               {
-                                check=1;
-                                selectedRequest={Index:i, operation:operation}
-                                self.selectedNode(selectedRequest);    
-                                
-                               }i+=1;
-                           }) } }) } })
+            let i = 0;
+            endpoints.forEach(endpoints => {
+                if (endpoints.property.label == endpoint.label) {
+                    check = 1;
+                    selectedRequest = {
+                        Index: i,
+                        operation: "GET"
+                    }
+                    self.selectedNode(selectedRequest);
+        
                 }
-});
+                i += 1;
+            })
+            if (check != 1) {
+        
+                const operation = endpoint.label;
+                const edges_array = Object.keys(data.edges._data).map(function(key) {
+                    return data.edges._data[key];
+                });
+        
+        
+                edges_array.forEach(edge => {
+                    if (edge.to == nodes[0] && edge.label == "supportedOp") {
+        
+                        element_array.forEach(element => {
+                            if (element.id == edge.from) {
+                                endpoint = element;
+                                i = 0;
+                                endpoints.forEach(endpoints => {
+                                    if (endpoints.property.label == endpoint.label) {
+                                        check = 1;
+                                        selectedRequest = {
+                                            Index: i,
+                                            operation: operation
+                                        }
+                                        self.selectedNode(selectedRequest);
+        
+                                    }
+                                    i += 1;
+                                })
+                            }
+                        });
+                    }
+                })
+            }
+        });
    
     }
 

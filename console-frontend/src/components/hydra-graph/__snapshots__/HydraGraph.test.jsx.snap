@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<HydraGraph /> snapshot render 1`] = `
+<header
+  className="app-header"
+>
+  <div
+    className="HydraGraph-graphContainer-1"
+    id="mynetwork"
+  />
+</header>
+`;
