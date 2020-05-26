@@ -50,7 +50,7 @@ class EndpointsButtons extends React.Component {
             return(<Button
                 key={currProperty}
                 variant="contained"
-                color={this.state.buttons[currProperty] ? "secondary" : null}
+                color={this.state.buttons[currProperty] ? "secondary" : "default"}
                 className={classes.endpointButton}
                 onClick={ (e) => {this.selectButton(currProperty); this.props.selectEndpoint(currProperty)}}>
                 {labelEndpoint}

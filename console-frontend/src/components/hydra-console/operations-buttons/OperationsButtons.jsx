@@ -49,7 +49,7 @@ class OperationsButtons extends React.Component {
             const operation = this.props.operations[currProperty].method 
             return(<Fab
                 key={currProperty}
-                color={this.state.buttons[currProperty] ? "secondary" : null}
+                color={this.state.buttons[currProperty] ? "secondary" : "default"}
                 className={classes.fabMargin}
                 onClick={ (e) => {this.selectButton(currProperty); this.props.selectOperation(currProperty)}}>
                 {operation}
