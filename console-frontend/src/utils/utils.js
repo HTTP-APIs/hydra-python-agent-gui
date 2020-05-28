@@ -1,5 +1,3 @@
-//todo Import localstorage helper functions here
-
 function isArray(value) {
     // utility method that returns boolean value
     return value && typeof value === "object" && value.constructor === Array;
@@ -23,7 +21,9 @@ function getFromLocalStorage(name){
 }
 
 module.exports = {
-    isArray: isArray,
-    isString: isString,
-    isObject: isObject
+    isArray,
+    isString,
+    isObject,
+    setInLocalStorage,
+    getFromLocalStorage
 }
