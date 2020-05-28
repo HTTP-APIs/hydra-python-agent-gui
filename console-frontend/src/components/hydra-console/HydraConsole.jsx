@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
@@ -14,6 +14,9 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import EndpointsButtons from './endpoints-buttons/EndpointsButtons'
 import OperationsButtons from './operations-buttons/OperationsButtons'
 import PropertiesEditor from './properties-editor/PropertiesEditor'
+
+// utils imports
+import {isArray, isObject, isString} from '../../utils/utils'
 
 // Custom Css modification to Raw Command Input field
 const CssTextField = withStyles({
@@ -121,28 +124,15 @@ const styles = theme => ({
 });
 
 
-function isObject(value) {
-    // utility method that returns boolean value
-    return value && typeof value === "object" && value.constructor === Object;
-}
-  
-function isArray(value) {
-    // utility method that returns boolean value
-    return value && typeof value === "object" && value.constructor === Array;
-}
-  
-function isString(value) {
-    // utility method that returns boolean value
-    return typeof value === "string" || value instanceof String;
-}
+//todo import isArray, isString from utils here. 
 
-class HydraConsole extends React.Component {
+class HydraConsole extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
         let endpoints = null;
         const classesMapping = []
-        this.agentEndpoint = ""
+        this.agentEndpoint = "http://localhost:3001"
 
         // util variables
         this.temporaryEndpoint = null;

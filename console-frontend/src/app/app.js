@@ -46,7 +46,7 @@ class AgentGUI extends React.Component {
     }
 
     // Empty when hosted using flask
-    this.agentEndpoint = ""
+    this.agentEndpoint = "http://localhost:3001"
   }
   
   componentDidMount() {

@@ -14,17 +14,17 @@ CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 url = "http://localhost:8080/serverapi"
 agent = Agent(url)
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve(path):
-    """Default endpoint, it serves the built static React App
-    :return: Served file
-    """
-    file_path = os.path.join(app.static_folder, path)
-    if path != "" and os.path.exists(file_path):
-        return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')
+# def serve(path):
+#     """Default endpoint, it serves the built static React App
+#     :return: Served file
+#     """
+#     file_path = os.path.join(app.static_folder, path)
+#     if path != "" and os.path.exists(file_path):
+#         return send_from_directory(app.static_folder, path)
+#     else:
+#         return send_from_directory(app.static_folder, 'index.html')
 
 @app.route("/start-agent", methods=['POST'])
 def start_agent():
@@ -211,4 +211,4 @@ def send_command():
 
 
 if __name__ == '__main__':
-    app.run(use_reloader=True, port=3000, threaded=True)
+    app.run(use_reloader=True, port=3001, threaded=True)
