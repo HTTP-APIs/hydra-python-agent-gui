@@ -292,125 +292,43 @@ class HydraConsole extends Component {
   }
 
   setResourceID(name, value) {
+
     // This is a ulitlity method to set the Resource Field id from clicking on the output link in output console
     this.getURL = true;
     const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
     resourcesIDs[name]["ResourceID"] = value.split("/").pop();
-
     setInLocalStorage("resourceIDs", JSON.stringify(resourcesIDs));
-
     this.setState({
       resourcesIDs: resourcesIDs,
     });
   }
-
-  printObjectValue = (value) => {
-    //  A helper method printObject() method to print its key value
+  convertOutput = (data) => {
     const classes = this.props.classes;
-    return Object.keys(value).map((key) => {
-      if (key == "@id") {
-        return (
-          <PrintID
-            classes={classes}
-            Objectkey={key}
-            value={value}
-            setResourceID={() =>
-              this.setResourceID(this.temporaryEndpoint, value[key])
-            }
-          />
-        );
-      }
-      if (isString(value[key])) {
-        return <PrintString classes={classes} ObjectKey={key} value={value} />;
-      }
-      if (isObject(value[key])) {
-        return (
-          <PrintObject
-            classes={classes}
-            objectKey={key}
-            value={value}
-            printObjectValue={this.printObjectValue}
-            isFirst={false}
-          />
-        );
-      }
-
-      if (isArray(value[key])) {
-        return (
-          <PrintArray
-            classes={classes}
-            objectKey={key}
-            value={value}
-            isFirst={false}
-            printArrayValue={this.printArrayValue}
-          />
-        );
-      }
-    });
-  };
-
-  printObject(value, isFirst = false) {
-    // Utility method to print key value pair of object
-    const classes = this.props.classes;
-
-    if (Object.keys(value).length == 0) {
-      // empty object, &#123; is code for '{' and &125; is for '}'
-      return <div className={classes.emptyObject}>&#123; &#125;</div>;
-    }
-
-    return (
-      <div className={classes.printObjectClass}>
-        <div>&#123;</div>
-        <div className={classes.outputConsoleBraces}>
-          {this.printObjectValue(value)}
-        </div>
-        <div>&#125;{!isFirst ? "," : ""}</div>
-      </div>
-    );
-  }
-
-  printArrayValue = (value) => {
-    // A helper method for printArray() to print all the values inside the Array
-    const classes = this.props.classes;
-    return value.map((v) => {
-      if (isString(v)) return <div className={classes.arrayValue}>{v},</div>;
-      if (isObject(v)) 
-        return <div className={classes.arrayValue}>{this.printObject(v)}</div>;
-      if (isArray(v))
-        return <div className={classes.arrayValue}>{this.printArray(v)}</div>;
-      return null;
-    });
-  };
-
-  printArray = (value, isFirst = false) => {
-    // utility method to print values of array in output console
-    const classes = this.props.classes;
-    if (value.length == 0) {
-      // Empty Array
-      return <div className={classes.emptyArray}>[]</div>;
-    }
-
-    return (
-      <div className={classes.printArrayClass}>
-        <div>[</div>
-        <div className={classes.outputConsoleBraces}>
-          {this.printArrayValue(value)}
-        </div>
-        <div>]{!isFirst ? "," : ""}</div>
-      </div>
-    );
-  };
-
-convertOutput = (data) => {
     // a generic method to print output on console of any response provided by the server
     if (isArray(data)) {
-    return <div>{this.printArray(data, true)}</div>;
+      return (
+        <PrintArray
+          classes={classes}
+          value={data}
+          isFirst={true}
+          temporaryEndpoint={this.temporaryEndpoint}
+          setResourceID={this.setResourceID.bind(this)}
+        />
+      );
     }
     if (isObject(data)) {
-    return <div>{this.printObject(data, true)}</div>;
+      return (
+        <PrintObject
+          classes={classes}
+          value={data}
+          isFirst={true}
+          temporaryEndpoint={this.temporaryEndpoint}
+          setResourceID={this.setResourceID.bind(this)}
+        />
+      );
     }
     return <div>{JSON.stringify(data, this.jsonStringifyReplacer, 8)}</div>;
-};
+  };
 
   // Put this in service
   sendCommand() {

@@ -1,15 +1,7 @@
-import React from 'react'
+import React from "react";
 
-const PrintString = ({classes, value, ObjectKey}) => {
-    return(
-        <div className={classes.objectValue}>
-            <div className={classes.objectValueKey}>{ObjectKey} :
-            </div>
-            <div className={classes.objectValueKeyValue}>{value[ObjectKey]},
-            </div>
-        </div>
-    )
-}
+const PrintString = ({ value, objectKey }) => {
+  return <div>{`${objectKey} : ${value[objectKey]}`} </div>;
+};
 
-export default PrintString
-
+export default PrintString;
