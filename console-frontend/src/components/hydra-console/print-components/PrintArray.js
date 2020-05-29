@@ -4,19 +4,19 @@ import PrintObject from "../print-components/PrintObject";
 
 const printArrayValue = (value, classes, setResourceID, temporaryEndpoint) => {
   // A helper method for printArray() to print all the values inside the Array
-  return value.map((v) => {
+  return value.map((v, index) => {
     if (isString(v)) return <div className={classes.arrayValue}>{v},</div>;
     if (isObject(v))
-    return (
-      <div className={classes.arrayValue}>
-        <PrintObject
-          classes={classes}
-          value={v}
-          isFirst={false}
-          setResourceID={() => setResourceID(temporaryEndpoint, v["@id"])}
-        />
-      </div>
-    );
+      return (
+        <div className={classes.arrayValue} key={index}>
+          <PrintObject
+            classes={classes}
+            value={v}
+            isFirst={false}
+            setResourceID={() => setResourceID(temporaryEndpoint, v["@id"])}
+          />
+        </div>
+      );
 
     if (isArray(v))
       return (

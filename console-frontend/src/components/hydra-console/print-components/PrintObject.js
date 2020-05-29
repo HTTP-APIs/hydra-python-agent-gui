@@ -1,19 +1,16 @@
 import React from "react";
-import {
-  isString,
-  isObject,
-  isArray,
-} from "../../../utils/utils";
+import { isString, isObject, isArray } from "../../../utils/utils";
 import PrintString from "../print-components/PrintString";
 import PrintArray from "../print-components/PrintArray";
 import PrintID from "../print-components/PrintId";
 
 const printObjectValue = (value, classes, setResourceID, temporaryEndpoint) => {
   //  A helper method printObject() method to print its key value
-  return Object.keys(value).map((key) => {
-    if (key == "@id") {
+  return Object.keys(value).map((key, index) => {
+    if (key === "@id") {
       return (
         <PrintID
+          key={index}
           classes={classes}
           value={value}
           setResourceID={() => setResourceID(temporaryEndpoint, value["@id"])}
@@ -21,15 +18,36 @@ const printObjectValue = (value, classes, setResourceID, temporaryEndpoint) => {
       );
     }
     if (isString(value[key])) {
-      return <PrintString classes={classes} value={value} objectKey={key} />;
+      return (
+        <PrintString
+          key={index}
+          classes={classes}
+          value={value}
+          objectKey={key}
+        />
+      );
     }
     if (isObject(value[key])) {
-      return <PrintObject classes={classes} value={value} isFirst={false} />;
+      return (
+        <PrintObject
+          key={index}
+          classes={classes}
+          value={value}
+          isFirst={false}
+        />
+      );
     }
-
     if (isArray(value[key])) {
-      return <PrintArray classes={classes} value={value} isFirst={false} />;
+      return (
+        <PrintArray
+          key={index}
+          classes={classes}
+          value={value}
+          isFirst={false}
+        />
+      );
     }
+    return <div key={index}></div>;
   });
 };
 

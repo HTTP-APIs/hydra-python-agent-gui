@@ -198,7 +198,7 @@ class HydraConsole extends Component {
   }
 
   restorePropertiesAndResourceIDs() {
-    if (this.previousEndpointIndex != this.state.selectedEndpointIndex) {
+    if (this.previousEndpointIndex !== this.state.selectedEndpointIndex) {
       const storedProperties = JSON.parse(getFromLocalStorage("properties"));
       const storedResourceIDs = JSON.parse(getFromLocalStorage("resourceIDs"));
 
@@ -226,8 +226,8 @@ class HydraConsole extends Component {
     const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
     const operations = selectedHydraClass.supportedOperation;
     let selectedOperationIndex = 0;
-    operations.map((operation, index) => {
-      if (operation.method == op) selectedOperationIndex = index;
+    operations.forEach((operation, index) => {
+      if (operation.method === op) selectedOperationIndex = index;
     });
 
     this.setState({
@@ -271,12 +271,12 @@ class HydraConsole extends Component {
   clearAllInputs(e) {
     // Will clear the current endpoints input
     const auxProperties = Object.assign({}, this.state.properties);
-    Object.keys(auxProperties[this.temporaryEndpoint]).map((name) => {
+    Object.keys(auxProperties[this.temporaryEndpoint]).forEach((name) => {
       auxProperties[this.temporaryEndpoint][name] = "";
     });
 
     const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
-    Object.keys(resourcesIDs).map((name) => {
+    Object.keys(resourcesIDs).forEach((name) => {
       resourcesIDs[name]["ResourceID"] = "";
     });
 
@@ -362,7 +362,6 @@ class HydraConsole extends Component {
       }
       // Call 1
       const rawOutput = await getRawOutput(getBody);
-      console.log("Raw output", rawOutput);
       const outputText = this.convertOutput(rawOutput.data);
       this.setState({
         outputText,
@@ -470,7 +469,7 @@ class HydraConsole extends Component {
     }
 
     return (
-      <Grid container className={classes.outContainer} md={12}>
+      <Grid container className={classes.outContainer}>
         <Grid
           item
           xs={12}

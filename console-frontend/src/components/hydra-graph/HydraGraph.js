@@ -12,11 +12,6 @@ const styles = theme => ({
 });
 
 class HydraGraph extends React.Component {
-    
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount(){
         const self = this;
         // Create Node and Edge Datasets 
@@ -67,31 +62,31 @@ class HydraGraph extends React.Component {
         }); 
    
 
-        element_array.map((element)=>{
-            if(element.id == node) {
+        element_array.forEach((element)=>{
+            if(element.id === node) {
                 endpoint = element;
-                endpoints.map((ept) => {
-                    if(ept.property.label == endpoint.label) {
+                endpoints.forEach((ept) => {
+                    if(ept.property.label === endpoint.label) {
                         check = 1;
                     }
                 })
             }
         })
 
-        if(check!=1){
+        if(check!==1){
      
             const edges_array= Object.keys(data.edges._data).map(function (key) { 
                 return data.edges._data[key]; 
             });  
         
 
-            edges_array.map((edge)=>{
-                if(edge.to == node && edge.label=="supportedOp"){
-                    element_array.map((element)=>{
-                        if(element.id == edge.from) {
+            edges_array.forEach((edge)=>{
+                if(edge.to === node && edge.label==="supportedOp"){
+                    element_array.forEach((element)=>{
+                        if(element.id === edge.from) {
                             endpoint = element;
-                            endpoints.map((ept)=>{
-                                if(ept.property.label == endpoint.label){
+                            endpoints.forEach((ept)=>{
+                                if(ept.property.label === endpoint.label){
                                     check = 1;
                                 }
                             })
@@ -101,7 +96,7 @@ class HydraGraph extends React.Component {
             })
         }
        
-        if(check==1)
+        if(check===1)
         {   
             
             options.nodes.color.hover.background= '#5BDE79';
@@ -128,7 +123,7 @@ class HydraGraph extends React.Component {
           
          element_array.forEach(element=>{
                 
-                if (element.id==nodes[0])
+                if (element.id===nodes[0])
                 {
                   endpoint = element;
                 }
@@ -136,7 +131,7 @@ class HydraGraph extends React.Component {
       
        let i=0;
        endpoints.forEach(endpoints=>{
-              if(endpoints.property.label==endpoint.label)
+              if(endpoints.property.label===endpoint.label)
                 { 
                   check=1;
                   selectedRequest={Index:i, operation:"GET"}
@@ -145,7 +140,7 @@ class HydraGraph extends React.Component {
                  }
               i+=1;    
            })
-           if(check!=1){
+           if(check!==1){
         
             const operation = endpoint.label;
             const edges_array= Object.keys(data.edges._data).map(function (key) { 
@@ -154,16 +149,16 @@ class HydraGraph extends React.Component {
            
            
            edges_array.forEach(edge=>{
-               if(edge.to==nodes[0] && edge.label=="supportedOp")
+               if(edge.to===nodes[0] && edge.label==="supportedOp")
                { 
                   
                   element_array.forEach(element=>{
-                      if(element.id==edge.from)
+                      if(element.id===edge.from)
                       {  
                            endpoint=element;
                            i=0;
                            endpoints.forEach(endpoints=>{
-                               if(endpoints.property.label==endpoint.label)
+                               if(endpoints.property.label===endpoint.label)
                                {
                                 check=1;
                                 selectedRequest={Index:i, operation:operation}
