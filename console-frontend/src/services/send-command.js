@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const agentEndpoint = "http://localhost:3001";
+const agentEndpoint = "";
 
 const getRawOutput = (body) => {
   return axios

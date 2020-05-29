@@ -1,10 +1,12 @@
-import axios from "axios"
-const agentEndpoint = "http://localhost:30001";
+import axios from "axios";
+const agentEndpoint = "";
 
 const startAgent = (serverURL) => {
-    return axios.post(`${agentEndpoint}/start-agent`,{url: serverURL}).then(res => {
-        return res;
-    })
-}
+  return axios
+    .post(`${agentEndpoint}/start-agent`, { url: serverURL })
+    .then((res) => {
+      return res;
+    });
+};
 
 export default startAgent;

@@ -136,7 +136,7 @@ class HydraConsole extends Component {
     this.child = React.createRef();
     let endpoints = null;
     const classesMapping = [];
-    this.agentEndpoint = "http://localhost:3001";
+    this.agentEndpoint = "";
 
     // util variables
     this.temporaryEndpoint = null;
