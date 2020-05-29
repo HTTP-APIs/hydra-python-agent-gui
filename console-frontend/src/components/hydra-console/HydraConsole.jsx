@@ -14,19 +14,18 @@ import { Scrollbars } from "react-custom-scrollbars";
 import EndpointsButtons from "./endpoints-buttons/EndpointsButtons";
 import OperationsButtons from "./operations-buttons/OperationsButtons";
 import PropertiesEditor from "./properties-editor/PropertiesEditor";
-import PrintID from "./print-components/PrintId";
-
+import PrintObject from "./print-components/PrintObject";
+import PrintArray from "./print-components/PrintArray";
 // utils imports
 import {
   isArray,
   isObject,
-  isString,
   setInLocalStorage,
   getFromLocalStorage,
+  jsonStringifyReplacer,
 } from "../../utils/utils";
-import PrintString from "./print-components/PrintString";
-import PrintObject from "./print-components/PrintObject";
-import PrintArray from "./print-components/PrintArray";
+// Service Import
+import getRawOutput from "../../services/send-command.js";
 // Custom Css modification to Raw Command Input field
 const CssTextField = withStyles({
   root: {
@@ -292,7 +291,6 @@ class HydraConsole extends Component {
   }
 
   setResourceID(name, value) {
-
     // This is a ulitlity method to set the Resource Field id from clicking on the output link in output console
     this.getURL = true;
     const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
@@ -327,11 +325,11 @@ class HydraConsole extends Component {
         />
       );
     }
-    return <div>{JSON.stringify(data, this.jsonStringifyReplacer, 8)}</div>;
+    return <div>{JSON.stringify(data, jsonStringifyReplacer, 8)}</div>;
   };
 
   // Put this in service
-  sendCommand() {
+  async sendCommand() {
     const properties = this.state.properties[this.temporaryEndpoint];
     const filteredProperties = {};
     for (const property in properties) {
@@ -363,19 +361,13 @@ class HydraConsole extends Component {
           filters: filteredProperties,
         };
       }
-      axios
-        .post(this.agentEndpoint + "/send-command", getBody)
-        .then((response) => {
-          let outputText = "";
-          outputText = this.convertOutput(response.data);
-          this.setState({
-            outputText,
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      return;
+      // Call 1
+      const rawOutput = await getRawOutput(getBody);
+      console.log("Raw output", rawOutput);
+      const outputText = this.convertOutput(rawOutput.data);
+      this.setState({
+        outputText,
+      });
     } else if (this.selectedOperation.method.toLowerCase() === "put") {
       let putBody = null;
       putBody = {
@@ -388,19 +380,13 @@ class HydraConsole extends Component {
         new_object: filteredProperties,
       };
       filteredProperties["@type"] = resourceType;
-      axios
-        .post(this.agentEndpoint + "/send-command", putBody)
-        .then((response) => {
-          let outputText = "";
-          outputText = this.convertOutput(response.data);
-          this.setState({
-            outputText,
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      return;
+      // Call 2
+      const rawOutput = await getRawOutput(putBody);
+      console.log("Raw output", rawOutput);
+      const outputText = this.convertOutput(rawOutput.data);
+      this.setState({
+        outputText,
+      });
     } else if (this.selectedOperation.method.toLowerCase() === "post") {
       let postBody = null;
       postBody = {
@@ -413,19 +399,11 @@ class HydraConsole extends Component {
         updated_object: filteredProperties,
       };
       filteredProperties["@type"] = resourceType;
-      axios
-        .post(this.agentEndpoint + "/send-command", postBody)
-        .then((response) => {
-          let outputText = "";
-          outputText = this.convertOutput(response.data);
-          this.setState({
-            outputText,
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      return;
+      const rawOutput = await getRawOutput(postBody);
+      const outputText = this.convertOutput(rawOutput.data);
+      this.setState({
+        outputText,
+      });
     } else if (this.selectedOperation.method.toLowerCase() === "delete") {
       let deleteBody = null;
       deleteBody = {
@@ -436,46 +414,12 @@ class HydraConsole extends Component {
           "/" +
           this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
       };
-      axios
-        .post(this.agentEndpoint + "/send-command", deleteBody)
-        .then((response) => {
-          let outputText = "";
-          outputText = this.convertOutput(response.data);
-          this.setState({
-            outputText,
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      return;
-    }
-    axios
-      .post(this.agentEndpoint + "/send-command", {
-        method: this.selectedOperation.method.toLowerCase(),
-        resource_type: this.selectedEndpoint.property.label,
-        filters: this.state.properties[this.temporaryEndpoint],
-      })
-      .then(function (response) {
-        let outputText = "";
-        outputText = this.convertOutput(response);
-        this.setState({
-          outputText,
-        });
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
+      const rawOutput = await getRawOutput(deleteBody);
+      const outputText = this.convertOutput(rawOutput.data);
+      this.setState({
+        outputText,
       });
-  }
-
-  // Belongs to utils function
-  jsonStringifyReplacer(key, value) {
-    // Filtering out properties
-    if (value === "") {
-      return undefined;
     }
-    return value;
   }
 
   render() {
@@ -501,7 +445,7 @@ class HydraConsole extends Component {
 
     const stringProps = JSON.stringify(
       this.state.properties[temporaryEndpoint],
-      this.jsonStringifyReplacer
+      jsonStringifyReplacer
     );
 
     let rawCommand = "";
