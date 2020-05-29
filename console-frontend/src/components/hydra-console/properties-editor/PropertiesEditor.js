@@ -2,7 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/styles';
 import Input from '@material-ui/core/Input';
 import Grid from '@material-ui/core/Grid';
-import GuiTheme from './../../../app/gui-theme';
+import GuiTheme from '../../../app/gui-theme';
 
 const styles = theme => ({
     propertyInput: {
