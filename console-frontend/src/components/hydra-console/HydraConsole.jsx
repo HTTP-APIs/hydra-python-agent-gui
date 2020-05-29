@@ -5,7 +5,6 @@ import Input from "@material-ui/core/Input";
 import Grid from "@material-ui/core/Grid";
 import GuiTheme from "../../app/gui-theme";
 import { withStyles } from "@material-ui/styles";
-import axios from "axios";
 
 // Custom imports
 import { Scrollbars } from "react-custom-scrollbars";
