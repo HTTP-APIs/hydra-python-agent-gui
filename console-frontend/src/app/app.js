@@ -5,6 +5,7 @@ import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/styles";
 import Grid from "@material-ui/core/Grid";
 import Send from "@material-ui/icons/Send";
@@ -17,21 +18,75 @@ import { ThemeProvider } from "@material-ui/styles";
 import getHydraDoc from "../services/hydra-doc-service";
 import getApiDocGraph from "../services/api-doc-graph-service";
 import startAgent from "../services/start-agent-service";
-
+import axios from "axios";
+import grey from "@material-ui/core/colors/grey";
 const styles = (theme) => ({
   serverInputContainer: {
-    width: "100%",
-    backgroundColor: GuiTheme.palette.primary.light,
-    border: 10,
     display: "flex",
-    paddingBottom: 20,
+    flexDirection: "column",
+    width: "90%",
+    margin: "0 auto",
+    borderRadius: "4px 4px 0px 0px",
+    ["@media (min-width:780px)"]: {
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      margin: "0 auto",
+    },
+  },
+  inputContainer: {
+    backgroundColor: "white",
+    padding: "0 10px",
+    ["@media (min-width:780px)"]: {
+      width: "35%",
+    },
   },
   serverInput: {
-    width: "75%",
-    backgroundColor: "#FBD20B",
+    width: "90%",
     padding: "5px",
+    borderBottom: "1px solid black",
+    paddingBottom: "0px",
     borderColor: "#000",
-    borderRadius: 10,
+    borderRadius: "4px 4px 0px 0px",
+    ["@media (min-width:780px)"]: {
+      width: "100%",
+    },
+  },
+  inputLabel: {
+    ["@media (min-width:780px)"]: {
+      display: "block",
+      paddingTop: "5px",
+    },
+  },
+  goBtn: {
+    display: "block",
+    margin: "1em 0em",
+    width: "90%",
+    backgroundColor: "#F2C94C",
+    boxShadow: "0px",
+    ["@media (min-width:780px)"]: {
+      display: "inline-block",
+      width: "5%",
+      marginLeft: "1em",
+      padding: "1em",
+    },
+  },
+  consoleGrid: {
+    borderRadius: "8px",
+    ["@media (min-width:780px)"]: {
+      order: 2,
+    },
+  },
+  graphGrid: {
+    ["@media (min-width:780px)"]: {
+      order: 1,
+    },
+  },
+  appContainer: {
+    minHeight: "100vh",
+    backgroundColor: "#F9F9F9",
+    padding: "1em",
   },
 });
 
@@ -102,39 +157,24 @@ class AgentGUI extends React.Component {
 
   render() {
     const { classes } = this.props;
-
     if (this.state.classes && this.state.apidocGraph.nodes) {
       return (
         <ThemeProvider theme={GuiTheme}>
           <NavBar
             text="Hydra Agent GUI"
-            fontSize="1.5em"
             backgroundColor={GuiTheme.palette.primary.main}
             color="primary"
             onClick={() => this.toggleGraph()}
           ></NavBar>
-          <Grid container>
-            <Grid
-              item
-              hidden={this.state.hidden}
-              md={12 - this.state.consoleWidth}
-              xs={12}
-            >
-              <NavBar
-                text="Hydra API"
-                fontSize="1.3em"
-                backgroundColor={GuiTheme.palette.primary.light}
-                fontColor="textSecondary"
-              ></NavBar>
-              <Grid
-                container
-                display="flex"
-                direction="row"
-                justify="center"
-                alignItems="center"
-                className={classes.serverInputContainer}
-              >
-                <InputLabel htmlFor="server_url_input">Server URL:</InputLabel>
+          <Grid container className={classes.appContainer}>
+            <Grid item className={classes.serverInputContainer}>
+              <div className={classes.inputContainer}>
+                <InputLabel
+                  className={classes.inputLabel}
+                  htmlFor="server_url_input"
+                >
+                  Server URL:
+                </InputLabel>
                 <Input
                   id="server_url_input"
                   placeholder="Server URL - Default: https://localhost:8080/serverapi/"
@@ -150,38 +190,47 @@ class AgentGUI extends React.Component {
                   inputProps={{
                     "aria-label": "hydrus-url",
                   }}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={(e) => this.submitServerURL(e)}
-                      >
-                        <Send />
-                      </IconButton>
-                    </InputAdornment>
-                  }
                 />
-              </Grid>
-              <HydraGraph
-                apidocGraph={this.state.apidocGraph}
-                serverUrl={this.state.serverURL}
-                hydraClasses={this.state.classes}
-                selectNode={this.selectNode}
-              ></HydraGraph>
+              </div>
+              <Button
+                variant="contained"
+                className={classes.goBtn}
+                onClick={(e) => this.submitServerURL(e)}
+                disableElevation
+              >
+                GO{" "}
+              </Button>
             </Grid>
-
-            <Grid item md={this.state.consoleWidth} xs={12} color="primary">
-              <NavBar
-                text="Agent Console"
-                fontSize="1.3em"
-                backgroundColor={GuiTheme.palette.primary.dark}
-              ></NavBar>
-              <HydraConsole
-                ref={this.child}
-                serverUrl={this.state.serverURL}
-                hydraClasses={this.state.classes}
+            <Grid container display="flex">
+              <Grid
+                item
+                order={2}
+                md={this.state.consoleWidth}
+                xs={12}
                 color="primary"
-              ></HydraConsole>
+                className={classes.consoleGrid}
+              >
+                <HydraConsole
+                  ref={this.child}
+                  serverUrl={this.state.serverURL}
+                  hydraClasses={this.state.classes}
+                  color="primary"
+                ></HydraConsole>
+              </Grid>
+              <Grid
+                item
+                hidden={this.state.hidden}
+                md={12 - this.state.consoleWidth}
+                xs={12}
+                className={classes.graphGrid}
+              >
+                <HydraGraph
+                  apidocGraph={this.state.apidocGraph}
+                  serverUrl={this.state.serverURL}
+                  hydraClasses={this.state.classes}
+                  selectNode={this.selectNode}
+                ></HydraGraph>
+              </Grid>
             </Grid>
           </Grid>
         </ThemeProvider>
