@@ -1,34 +1,37 @@
-import React from 'react';
-import NavBar from '../components/navbar/NavBar';
-import Loader from '../components/loader/Loader'
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
-import Send from '@material-ui/icons/Send';
-import HydraConsole from '../components/hydra-console/HydraConsole'
-import HydraGraph from '../components/hydra-graph/HydraGraph'
-import './app.scss';
-import GuiTheme from './gui-theme'
-import { ThemeProvider } from '@material-ui/styles';
-import axios from 'axios';
+import React from "react";
+import NavBar from "../components/navbar/NavBar";
+import Loader from "../components/loader/Loader";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import { withStyles } from "@material-ui/styles";
+import Grid from "@material-ui/core/Grid";
+import Send from "@material-ui/icons/Send";
+import HydraConsole from "../components/hydra-console/HydraConsole";
+import HydraGraph from "../components/hydra-graph/HydraGraph";
+import "./app.scss";
+import GuiTheme from "./gui-theme";
+import { ThemeProvider } from "@material-ui/styles";
 
-const styles = theme => ({
+import getHydraDoc from "../services/hydra-doc-service";
+import getApiDocGraph from "../services/api-doc-graph-service";
+import startAgent from "../services/start-agent-service";
+
+const styles = (theme) => ({
   serverInputContainer: {
-    width: '100%',
+    width: "100%",
     backgroundColor: GuiTheme.palette.primary.light,
     border: 10,
-    display: 'flex',
-    paddingBottom: 20
+    display: "flex",
+    paddingBottom: 20,
   },
   serverInput: {
-      width: '75%',
-      backgroundColor: '#FBD20B',
-      padding: '5px',
-      borderColor: '#000',
-      borderRadius: 10,
+    width: "75%",
+    backgroundColor: "#FBD20B",
+    padding: "5px",
+    borderColor: "#000",
+    borderRadius: 10,
   },
 });
 
@@ -37,152 +40,155 @@ class AgentGUI extends React.Component {
     super(props);
     this.child = React.createRef();
     this.state = {
-      consoleWidth: 6, 
-      hidden: false, 
+      consoleWidth: 6,
+      hidden: false,
       classes: null,
-      apidocGraph: {edges: null, nodes: null},
+      apidocGraph: { edges: null, nodes: null },
       serverURL: "http://localhost:8080/serverapi/",
       selectedNodeIndex: null,
-    }
-
+    };
     // Empty when hosted using flask
-    this.agentEndpoint = ""
+    this.agentEndpoint = "";
   }
-  
-  componentDidMount() {
-    axios.get(this.agentEndpoint + "/hydra-doc")
-      .then(res => {
-        this.setState({
-          //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
-          classes: res.data.supportedClass,
-          serverURL: res.data.serverURL.replace(/\/$/, "") + "/",
-        }, () => this.render())
-      });
 
-      axios.get(this.agentEndpoint + "/apidoc-graph")
-      .then(res => {
-        this.setState({
-          //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.labe
-          apidocGraph: res.data
-        }, () => this.render())
-      });
+  async componentDidMount() {
+    const data = await getHydraDoc();
+    //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.label
+    this.setState({
+      classes: data.supportedClass,
+      serverURL: data.serverURL.replace(/\/$/, "") + "/",
+    });
+    const apidocGraph = await getApiDocGraph();
+    //for this.supportedClass > if @id="vocab:EntryPoint" then supportedProperty.property.label
+    this.setState({
+      apidocGraph,
+    });
   }
-  selectNode=(selectedRequest)=>{
-  console.log(selectedRequest.operation);
-  this.child.current.selectEndpoint(selectedRequest.Index,selectedRequest.operation);
-  }
-  toggleGraph(){
-    if(this.state.hidden){
+  selectNode = (selectedRequest) => {
+    console.log(selectedRequest.operation);
+    this.child.current.selectEndpoint(
+      selectedRequest.Index,
+      selectedRequest.operation
+    );
+  };
+  toggleGraph() {
+    if (this.state.hidden) {
       this.setState({
         consoleWidth: 6,
-        hidden: false
-      })
-    }else{
+        hidden: false,
+      });
+    } else {
       this.setState({
         consoleWidth: 12,
-        hidden: true
-      })
+        hidden: true,
+      });
     }
   }
 
-  handleChangeServerURL(e){
+  handleChangeServerURL(e) {
     this.setState({
       serverURL: e.target.value,
-    })
+    });
   }
 
-  submitServerURL(e){
-    axios.post(this.agentEndpoint + "/start-agent" , {url: this.state.serverURL})
-    .then( (successUpdate) => {
-      axios.get(this.agentEndpoint + "/hydra-doc")
-      .then(res => {
-        this.setState({
-          classes: res.data.supportedClass,
-        }, () => window.location.reload() )
-        .catch( (error) => {
-          console.log(error)
-        })
-      });
-    })
-    .catch( (error) => {
-      console.log(error)
-    })
+  async submitServerURL(e) {
+    await startAgent(this.state.serverURL);
+    const hydradoc = await getHydraDoc();
+    this.setState({
+      classes: hydradoc.supportedClass,
+    });
+    window.location.reload();
   }
 
   render() {
     const { classes } = this.props;
 
-    if(this.state.classes && this.state.apidocGraph.nodes ){
+    if (this.state.classes && this.state.apidocGraph.nodes) {
       return (
         <ThemeProvider theme={GuiTheme}>
-          <NavBar 
+          <NavBar
             text="Hydra Agent GUI"
-            fontSize='1.5em'
+            fontSize="1.5em"
             backgroundColor={GuiTheme.palette.primary.main}
-            color='primary'
-            onClick={() => this.toggleGraph()}>
-          </NavBar>
+            color="primary"
+            onClick={() => this.toggleGraph()}
+          ></NavBar>
           <Grid container>
-            <Grid item hidden={this.state.hidden} md={12 - this.state.consoleWidth} xs={12} > 
-              <NavBar text="Hydra API" fontSize='1.3em'
+            <Grid
+              item
+              hidden={this.state.hidden}
+              md={12 - this.state.consoleWidth}
+              xs={12}
+            >
+              <NavBar
+                text="Hydra API"
+                fontSize="1.3em"
                 backgroundColor={GuiTheme.palette.primary.light}
-                fontColor="textSecondary"></NavBar>
-                <Grid
-                  container
-                  display="flex"
-                  direction="row"
-                  justify="center"
-                  alignItems="center"
-                  className={classes.serverInputContainer}>
-                  <InputLabel htmlFor="server_url_input">Server URL:</InputLabel>
-                  <Input
-                      id="server_url_input"
-                      placeholder="Server URL - Default: https://localhost:8080/serverapi/"
-                      onKeyPress={ (e) => {if(e.key === 'Enter'){ this.submitServerURL(e) } }}
-                      value={this.state.serverURL}
-                      onChange={ (e) => this.handleChangeServerURL(e) }
-                      className={classes.serverInput}
-                      disableUnderline={true} 
-                      inputProps={{
-                          'aria-label': 'hydrus-url',
-                      }}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={(e) => this.submitServerURL(e) }
-                          >
-                            <Send/>
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                  />
+                fontColor="textSecondary"
+              ></NavBar>
+              <Grid
+                container
+                display="flex"
+                direction="row"
+                justify="center"
+                alignItems="center"
+                className={classes.serverInputContainer}
+              >
+                <InputLabel htmlFor="server_url_input">Server URL:</InputLabel>
+                <Input
+                  id="server_url_input"
+                  placeholder="Server URL - Default: https://localhost:8080/serverapi/"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      this.submitServerURL(e);
+                    }
+                  }}
+                  value={this.state.serverURL}
+                  onChange={(e) => this.handleChangeServerURL(e)}
+                  className={classes.serverInput}
+                  disableUnderline={true}
+                  inputProps={{
+                    "aria-label": "hydrus-url",
+                  }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={(e) => this.submitServerURL(e)}
+                      >
+                        <Send />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
               </Grid>
               <HydraGraph
                 apidocGraph={this.state.apidocGraph}
                 serverUrl={this.state.serverURL}
                 hydraClasses={this.state.classes}
-                selectNode={this.selectNode}> 
-                
-              </HydraGraph>
+                selectNode={this.selectNode}
+              ></HydraGraph>
             </Grid>
-    
-            <Grid item md={this.state.consoleWidth} xs={12} color='primary'>
-              <NavBar text="Agent Console" fontSize='1.3em'
+
+            <Grid item md={this.state.consoleWidth} xs={12} color="primary">
+              <NavBar
+                text="Agent Console"
+                fontSize="1.3em"
                 backgroundColor={GuiTheme.palette.primary.dark}
-              ></NavBar> 
+              ></NavBar>
               <HydraConsole
                 ref={this.child}
                 serverUrl={this.state.serverURL}
                 hydraClasses={this.state.classes}
-                color='primary' ></HydraConsole>
+                color="primary"
+              ></HydraConsole>
             </Grid>
           </Grid>
         </ThemeProvider>
       );
-    }else{
+    } else {
       // This should return a loading screen
-      return (<Loader />)
+      return <Loader />;
     }
   }
 }

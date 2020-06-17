@@ -17,7 +17,7 @@ class OperationsButtons extends React.Component {
         const operationsArray = Object.keys(this.props.operations);
         operationsArray.forEach( (operation, index) => {
             buttons[operation] = false
-            if(this.props.operations[operation].method == "GET")
+            if(this.props.operations[operation].method === "GET")
                 selectedButton = index
         })
 
