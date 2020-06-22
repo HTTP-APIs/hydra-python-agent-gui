@@ -249,7 +249,6 @@ class HydraConsole extends Component {
     const selectedEndpoint = this.state.endpoints[endpointIndex];
     this.selectedEndpoint = selectedEndpoint;
     this.child.current.selectButton(endpointIndex);
-
     const temporaryEndpoint = selectedEndpoint.property.range.replace(
       "Collection",
       ""

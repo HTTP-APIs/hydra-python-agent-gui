@@ -120,7 +120,6 @@ class AgentGUI extends React.Component {
     });
   }
   selectNode = (selectedRequest) => {
-    console.log(selectedRequest.operation);
     this.child.current.selectEndpoint(
       selectedRequest.Index,
       selectedRequest.operation
@@ -217,20 +216,16 @@ class AgentGUI extends React.Component {
                   color="primary"
                 ></HydraConsole>
               </Grid>
-              <Grid
-                item
-                hidden={this.state.hidden}
-                md={12 - this.state.consoleWidth}
-                xs={12}
-                className={classes.graphGrid}
-              >
-                <HydraGraph
-                  apidocGraph={this.state.apidocGraph}
-                  serverUrl={this.state.serverURL}
-                  hydraClasses={this.state.classes}
-                  selectNode={this.selectNode}
-                ></HydraGraph>
-              </Grid>
+              {!this.state.hidden && (
+                <Grid item md={6} xs={12} className={classes.graphGrid}>
+                  <HydraGraph
+                    apidocGraph={this.state.apidocGraph}
+                    serverUrl={this.state.serverURL}
+                    hydraClasses={this.state.classes}
+                    selectNode={this.selectNode}
+                  ></HydraGraph>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </ThemeProvider>

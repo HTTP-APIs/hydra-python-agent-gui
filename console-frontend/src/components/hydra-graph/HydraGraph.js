@@ -24,7 +24,6 @@ class HydraGraph extends React.Component {
     // Create Node and Edge Datasets
     const nodes = new DataSet(this.props.apidocGraph.nodes);
     const edges = new DataSet(this.props.apidocGraph.edges);
-
     // Get reference to the mynetwork div
     const container = document.getElementById("mynetwork");
 
