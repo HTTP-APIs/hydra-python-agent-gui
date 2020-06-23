@@ -18,8 +18,7 @@ const styles = (theme) => ({
     width: "100%",
   },
   required: {
-    color: "rgba(0, 0, 0, 0.87)",
-    letterSpacing: "1px",
+    color: "rgba(0, 0, 0, 0.5)",
   },
 });
 
@@ -58,7 +57,7 @@ class PropertiesEditor extends React.Component {
 
   generateProperties() {
     const fields = [];
-
+    
     for (const property in this.props.properties) {
       fields.push(
         this.generateField(

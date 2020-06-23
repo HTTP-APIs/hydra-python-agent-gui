@@ -214,7 +214,6 @@ class HydraConsole extends Component {
     } else {
       resourcesIDs = JSON.parse(getFromLocalStorage("resourceIDs"));
     }
-
     this.state = {
       hydraClasses: classesMapping,
       classesPropertiesWithMetaData,
@@ -222,7 +221,7 @@ class HydraConsole extends Component {
       properties: classesProperties,
       resourcesIDs: resourcesIDs,
       selectedEndpointIndex: 0,
-      selectedOperationIndex: 0,
+      selectedOperationIndex: 1,
       outputText: " Your request output will be displayed here...",
     };
   }
@@ -542,6 +541,7 @@ class HydraConsole extends Component {
             </Grid>
             {this.selectedOperation.method !== "DELETE" && (
               <PropertiesEditor
+                activatedMethod={this.selectedOperation.method}
                 endpoint={this.temporaryEndpoint}
                 properties={this.state.properties[temporaryEndpoint]}
                 metaProps={this.state.classesPropertiesWithMetaData}
