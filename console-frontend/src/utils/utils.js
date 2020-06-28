@@ -27,6 +27,10 @@ function jsonStringifyReplacer(key, value) {
   }
   return value;
 }
+function extractPageNumberFromString(str) {
+  const indexPage = str.indexOf("page=");
+  return str[indexPage + 5];
+}
 
 module.exports = {
   isArray,
@@ -35,4 +39,5 @@ module.exports = {
   setInLocalStorage,
   getFromLocalStorage,
   jsonStringifyReplacer,
+  extractPageNumberFromString,
 };

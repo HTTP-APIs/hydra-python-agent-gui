@@ -13,11 +13,13 @@ import { Scrollbars } from "react-custom-scrollbars";
 import EndpointsButtons from "./endpoints-buttons/EndpointsButtons";
 import OperationsButtons from "./operations-buttons/OperationsButtons";
 import PropertiesEditor from "./properties-editor/PropertiesEditor";
+import Pagination from "./pagination/Pagination";
 // utils imports
 import {
   setInLocalStorage,
   getFromLocalStorage,
   jsonStringifyReplacer,
+  extractPageNumberFromString,
 } from "../../utils/utils";
 // Service Import
 import getRawOutput from "../../services/send-command.js";
@@ -73,6 +75,7 @@ const styles = (theme) => ({
     marginBottom: "1em",
     backgroundColor: "white",
     marginTop: "1em",
+    maxHeight: "50vh",
     ["@media (min-width:780px)"]: {
       width: "100%",
       fontSize: "0.8em",
@@ -152,6 +155,11 @@ const styles = (theme) => ({
     marginBottom: "0.5em",
     textAlign: "center",
   },
+  pages: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+  },
 });
 
 class HydraConsole extends Component {
@@ -222,6 +230,7 @@ class HydraConsole extends Component {
       resourcesIDs: resourcesIDs,
       selectedEndpointIndex: 0,
       selectedOperationIndex: 1,
+      getPage: 1,
       outputText: " Your request output will be displayed here...",
     };
   }
@@ -229,6 +238,16 @@ class HydraConsole extends Component {
     this.restorePropertiesAndResourceIDs();
   }
 
+  changePage(e, page) {
+    this.setState(
+      {
+        getPage: page,
+      },
+      () => {
+        this.sendCommand();
+      }
+    );
+  }
   restorePropertiesAndResourceIDs() {
     if (this.previousEndpointIndex !== this.state.selectedEndpointIndex) {
       const storedProperties = JSON.parse(getFromLocalStorage("properties"));
@@ -330,7 +349,6 @@ class HydraConsole extends Component {
       resourcesIDs: resourcesIDs,
     });
   }
-  // Put this in service
   async sendCommand() {
     const properties = this.state.properties[this.temporaryEndpoint];
     const filteredProperties = {};
@@ -339,7 +357,7 @@ class HydraConsole extends Component {
         filteredProperties[property] = properties[property];
       }
     }
-
+    filteredProperties["page"] = this.state.getPage;
     const resourceType = this.selectedEndpoint.property.label.replace(
       "Collection",
       ""
@@ -347,14 +365,22 @@ class HydraConsole extends Component {
 
     if (this.selectedOperation.method.toLowerCase() === "get") {
       let getBody = null;
+      let url = "";
       if (this.getURL) {
-        getBody = {
-          method: "get",
-          url:
+        if (this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"]) {
+          url =
             this.props.serverUrl +
             this.selectedEndpoint.property.label +
             "/" +
-            this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
+            this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"];
+        } else {
+          url =
+            this.props.serverUrl + this.selectedEndpoint.property.label + "/";
+        }
+        getBody = {
+          method: "get",
+          url: url,
+          filters: filteredProperties,
         };
       } else {
         getBody = {
@@ -365,9 +391,16 @@ class HydraConsole extends Component {
       }
       // Call 1
       const rawOutput = await getRawOutput(getBody);
-      const outputText = rawOutput.data;
+      const outputText = rawOutput.data.members || rawOutput.data;
+      const pagination = rawOutput.data.view;
+      let lastPage = 1;
+      if (pagination) {
+        lastPage = extractPageNumberFromString(pagination["last"]);
+      }
+
       this.setState({
         outputText,
+        lastPage,
       });
     } else if (this.selectedOperation.method.toLowerCase() === "put") {
       let putBody = null;
@@ -421,11 +454,11 @@ class HydraConsole extends Component {
       });
     }
   }
-
   render() {
     // Block of values that need to be re assigned every rendering update
     // They are used below along the html
     const { classes } = this.props;
+
     const selectedEndpoint = this.state.endpoints[
       this.state.selectedEndpointIndex
     ];
@@ -598,10 +631,19 @@ class HydraConsole extends Component {
           <span className={classes.outputContainerHeader}> RESPONSE</span>
           <div className={classes.outputContainer}>
             {typeof this.state.outputText === "string" ? (
-              <ReactJson defaultValue="Your Output will be displayed here" />
+              <ReactJson
+                src={{ msg: "Your Output will be displayed here" }}
+                name={null}
+              />
             ) : (
               <ReactJson src={this.state.outputText} name={null} />
             )}
+          </div>
+          <div className={classes.pages}>
+            <Pagination
+              last_page={this.state.lastPage}
+              paginate={this.changePage.bind(this)}
+            />
           </div>
         </Grid>
       </Grid>

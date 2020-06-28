@@ -8,6 +8,7 @@ const styles = (theme) => ({
     backgroundColor: "#FFF",
     margin: "0 1em",
     borderRadius: "8px",
+    width: "90%",
   },
   graphName: {
     color: "black",
@@ -35,6 +36,7 @@ class HydraGraph extends React.Component {
     // See vis.js network options for more details on how to use this
     const options = {
       interaction: { hover: true },
+      autoResize: true,
       nodes: {
         color: {
           hover: {
@@ -42,6 +44,9 @@ class HydraGraph extends React.Component {
             background: "#5BDE79",
           },
         },
+      },
+      layout: {
+        improvedLayout: true,
       },
     };
     // Create a network
@@ -158,6 +163,13 @@ class HydraGraph extends React.Component {
           }
         });
       }
+    });
+    network.moveTo({
+      scale: 1.3,
+      animation: {
+        duration: "0.5s",
+        easingFunction: "linear",
+      },
     });
   }
 
