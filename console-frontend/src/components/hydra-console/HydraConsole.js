@@ -239,14 +239,7 @@ class HydraConsole extends Component {
   }
 
   changePage(e, page) {
-    this.setState(
-      {
-        getPage: page,
-      },
-      () => {
-        this.sendCommand();
-      }
-    );
+    this.sendCommand(page);
   }
   restorePropertiesAndResourceIDs() {
     if (this.previousEndpointIndex !== this.state.selectedEndpointIndex) {
@@ -349,7 +342,7 @@ class HydraConsole extends Component {
       resourcesIDs: resourcesIDs,
     });
   }
-  async sendCommand() {
+  async sendCommand(page) {
     const properties = this.state.properties[this.temporaryEndpoint];
     const filteredProperties = {};
     for (const property in properties) {
@@ -357,7 +350,7 @@ class HydraConsole extends Component {
         filteredProperties[property] = properties[property];
       }
     }
-    filteredProperties["page"] = this.state.getPage;
+    filteredProperties["page"] = page;
     const resourceType = this.selectedEndpoint.property.label.replace(
       "Collection",
       ""
@@ -595,7 +588,7 @@ class HydraConsole extends Component {
           </Button>
           <Button
             className={classes.sendRequest}
-            onClick={() => this.sendCommand()}
+            onClick={() => this.sendCommand(1)}
           >
             Send Request
           </Button>
