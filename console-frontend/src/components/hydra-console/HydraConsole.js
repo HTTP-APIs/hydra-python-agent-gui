@@ -350,13 +350,14 @@ class HydraConsole extends Component {
         filteredProperties[property] = properties[property];
       }
     }
-    filteredProperties["page"] = page;
+
     const resourceType = this.selectedEndpoint.property.label.replace(
       "Collection",
       ""
     );
 
     if (this.selectedOperation.method.toLowerCase() === "get") {
+      filteredProperties["page"] = page;
       let getBody = null;
       let url = "";
       if (this.getURL) {
