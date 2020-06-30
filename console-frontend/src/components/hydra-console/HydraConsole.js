@@ -5,7 +5,7 @@ import Input from "@material-ui/core/Input";
 import Grid from "@material-ui/core/Grid";
 import GuiTheme from "../../app/gui-theme";
 import { withStyles } from "@material-ui/styles";
-
+import ReactJson from "react-json-view";
 // Custom imports
 import { Scrollbars } from "react-custom-scrollbars";
 
@@ -13,56 +13,48 @@ import { Scrollbars } from "react-custom-scrollbars";
 import EndpointsButtons from "./endpoints-buttons/EndpointsButtons";
 import OperationsButtons from "./operations-buttons/OperationsButtons";
 import PropertiesEditor from "./properties-editor/PropertiesEditor";
-import PrintObject from "./print-components/PrintObject";
-import PrintArray from "./print-components/PrintArray";
+import Pagination from "./pagination/Pagination";
 // utils imports
 import {
-  isArray,
-  isObject,
   setInLocalStorage,
   getFromLocalStorage,
   jsonStringifyReplacer,
+  extractPageNumberFromString,
 } from "../../utils/utils";
 // Service Import
 import getRawOutput from "../../services/send-command.js";
 // Custom Css modification to Raw Command Input field
 const CssTextField = withStyles({
   root: {
-    "& label.Mui-focused": {
-      color: GuiTheme.palette.primary.light,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: GuiTheme.palette.secondary.main,
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: GuiTheme.palette.primary.light,
-        height: "55px",
-      },
-      "&:hover fieldset": {
-        borderColor: GuiTheme.palette.secondary.main,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: GuiTheme.palette.primary.light,
-      },
-    },
+    // "& label.Mui-focused": {
+    //   color: GuiTheme.palette.primary.light,
+    // },
+    // "& .MuiInput-underline:after": {
+    //   borderBottomColor: GuiTheme.palette.secondary.main,
+    // },
+    // "& .MuiOutlinedInput-root": {
+    //   "& fieldset": {
+    //     borderColor: GuiTheme.palette.primary.light,
+    //     height: "55px",
+    //   },
+    //   "&:hover fieldset": {
+    //     borderColor: GuiTheme.palette.secondary.main,
+    //   },
+    //   "&.Mui-focused fieldset": {
+    //     borderColor: GuiTheme.palette.primary.light,
+    //   },
+    // },
   },
 })(TextField);
 
 // Css Styles to the Components
 const styles = (theme) => ({
-  outContainer: {
-    backgroundColor: GuiTheme.palette.primary.dark,
-  },
   propertiesContainer: {
-    maxHeight: "40vh",
+    maxHeight: "30vh",
     width: "100%",
-    maxWidth: "80%",
-    padding: "20px",
-    backgroundColor: GuiTheme.palette.primary.light,
+    padding: "1em",
     overflowY: "auto",
-    border: "3px solid Gray",
-    borderRadius: "25px",
+    backgroundColor: "white",
   },
   propertyContainer: {
     marginTop: "2px",
@@ -70,63 +62,103 @@ const styles = (theme) => ({
   },
   propertyInput: {
     color: GuiTheme.palette.primary.dark,
-    marginLeft: "10px",
-    marginRight: "6px",
+    marginTop: "1em",
   },
   input: {
-    flex: "100",
+    display: "block",
+    width: "100%",
   },
   outputContainer: {
-    minHeight: "300px",
-    width: "90%",
-    backgroundColor: GuiTheme.palette.primary.light,
-    whiteSpace: "pre",
+    width: "100%",
+    padding: "1em",
     overflowY: "auto",
+    marginBottom: "1em",
+    backgroundColor: "white",
+    marginTop: "1em",
+    maxHeight: "50vh",
     ["@media (min-width:780px)"]: {
-      width: "80%",
+      width: "100%",
       fontSize: "0.8em",
     },
   },
+  rawCommandGrid: {
+    backgroundColor: "white",
+    marginBottom: "1em",
+  },
   outputContainerHeader: {
-    width: "90%",
-    backgroundColor: GuiTheme.palette.primary.light,
     fontSize: "1.0em",
-    padding: "7px",
-    border: "2px solid Gray",
-    borderRadius: "6px",
+    padding: "1em",
+    letterSpacing: "1px",
   },
   textField: {
-    width: "68%",
-    marginRight: "1%",
+    width: "100%",
+    margin: "1em",
     color: "#000",
     borderColor: "#0f0",
+    fontFamily:
+      "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
   },
   deleteIconButton: {
-    marginLeft: "60% !important",
-    marginBottom: "10px",
-    backgroundColor: GuiTheme.palette.primary.light,
+    marginLeft: "1em",
     color: GuiTheme.palette.primary.dark,
-    "&:hover": {
-      backgroundColor: GuiTheme.palette.secondary.light,
-      color: GuiTheme.palette.primary.dark,
+  },
+
+  endpointButtonContainerOuter: {
+    backgroundColor: "white",
+    overflow: "auto",
+    marginLeft: "1em",
+    maxHeight: "50vh",
+    ["@media (min-width:780px)"]: {
+      backgroundColor: "white",
+      marginLeft: "0em",
+      width: "100%",
     },
   },
-  outputConsoleBraces: {
-    marginLeft: "20px",
-  },
-  objectValue: {
+  endpointButtonContainerInner: {
     display: "flex",
+    width: "100%",
+    borderBottom: "1px solid #E4E4E4",
+    ["@media (min-width:780px)"]: {
+      flexDirection: "column",
+      borderBottom: "none",
+    },
   },
-  objectValueKeyValueLink: {
-    marginLeft: "10px",
-    color: "#0276FD",
-    cursor: "pointer",
+  operationsButtonContainer: {
+    width: "100%",
+    paddingTop: "1em",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    flexDirection: "column",
+    ["@media (min-width:780px)"]: {},
   },
-  objectValueKey: {
-    marginLeft: "5px",
+  description: {
+    marginBottom: "1em",
+    color: "grey",
+    letterSpacing: "1px",
   },
-  objectValueKeyValue: {
-    marginLeft: "10px",
+  sendRequest: {
+    backgroundColor: "#F2C94C",
+    float: "right",
+    marginRight: "1em",
+  },
+  consoleGrid: {
+    backgroundColor: "white",
+  },
+  responseGrid: {
+    ["@media (min-width:780px)"]: {},
+  },
+  classDescription: {
+    width: "100%",
+    margin: "0 auto",
+    marginBottom: "0.5em",
+    textAlign: "center",
+  },
+  pages: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
   },
 });
 
@@ -158,8 +190,10 @@ class HydraConsole extends Component {
     // Initializing empty array with all properties in the ApiDoc
     let classesProperties = {};
     let resourcesIDs = {};
+    let classesPropertiesWithMetaData = {};
     for (const auxClass in classesMapping) {
       classesProperties[classesMapping[auxClass]["@id"]] = {};
+      classesPropertiesWithMetaData[auxClass] = [];
       // Creating the array that will maintain the Resources IDs
       resourcesIDs[classesMapping[auxClass]["@id"]] = {};
       resourcesIDs[classesMapping[auxClass]["@id"]]["ResourceID"] = "";
@@ -167,6 +201,12 @@ class HydraConsole extends Component {
         classesProperties[classesMapping[auxClass]["@id"]][
           classesMapping[auxClass].supportedProperty[auxProperty].title
         ] = "";
+        classesPropertiesWithMetaData[auxClass].push({
+          property:
+            classesMapping[auxClass].supportedProperty[auxProperty].title,
+          required:
+            classesMapping[auxClass].supportedProperty[auxProperty].required,
+        });
       }
     }
 
@@ -182,14 +222,15 @@ class HydraConsole extends Component {
     } else {
       resourcesIDs = JSON.parse(getFromLocalStorage("resourceIDs"));
     }
-
     this.state = {
       hydraClasses: classesMapping,
+      classesPropertiesWithMetaData,
       endpoints: endpoints,
       properties: classesProperties,
       resourcesIDs: resourcesIDs,
       selectedEndpointIndex: 0,
-      selectedOperationIndex: 0,
+      selectedOperationIndex: 1,
+      getPage: 1,
       outputText: " Your request output will be displayed here...",
     };
   }
@@ -197,6 +238,9 @@ class HydraConsole extends Component {
     this.restorePropertiesAndResourceIDs();
   }
 
+  changePage(e, page) {
+    this.sendCommand(page);
+  }
   restorePropertiesAndResourceIDs() {
     if (this.previousEndpointIndex !== this.state.selectedEndpointIndex) {
       const storedProperties = JSON.parse(getFromLocalStorage("properties"));
@@ -216,7 +260,6 @@ class HydraConsole extends Component {
     const selectedEndpoint = this.state.endpoints[endpointIndex];
     this.selectedEndpoint = selectedEndpoint;
     this.child.current.selectButton(endpointIndex);
-
     const temporaryEndpoint = selectedEndpoint.property.range.replace(
       "Collection",
       ""
@@ -299,36 +342,7 @@ class HydraConsole extends Component {
       resourcesIDs: resourcesIDs,
     });
   }
-  convertOutput = (data) => {
-    const classes = this.props.classes;
-    // a generic method to print output on console of any response provided by the server
-    if (isArray(data)) {
-      return (
-        <PrintArray
-          classes={classes}
-          value={data}
-          isFirst={true}
-          temporaryEndpoint={this.temporaryEndpoint}
-          setResourceID={this.setResourceID.bind(this)}
-        />
-      );
-    }
-    if (isObject(data)) {
-      return (
-        <PrintObject
-          classes={classes}
-          value={data}
-          isFirst={true}
-          temporaryEndpoint={this.temporaryEndpoint}
-          setResourceID={this.setResourceID.bind(this)}
-        />
-      );
-    }
-    return <div>{JSON.stringify(data, jsonStringifyReplacer, 8)}</div>;
-  };
-
-  // Put this in service
-  async sendCommand() {
+  async sendCommand(page) {
     const properties = this.state.properties[this.temporaryEndpoint];
     const filteredProperties = {};
     for (const property in properties) {
@@ -343,15 +357,24 @@ class HydraConsole extends Component {
     );
 
     if (this.selectedOperation.method.toLowerCase() === "get") {
+      filteredProperties["page"] = page;
       let getBody = null;
+      let url = "";
       if (this.getURL) {
-        getBody = {
-          method: "get",
-          url:
+        if (this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"]) {
+          url =
             this.props.serverUrl +
             this.selectedEndpoint.property.label +
             "/" +
-            this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
+            this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"];
+        } else {
+          url =
+            this.props.serverUrl + this.selectedEndpoint.property.label + "/";
+        }
+        getBody = {
+          method: "get",
+          url: url,
+          filters: filteredProperties,
         };
       } else {
         getBody = {
@@ -362,9 +385,16 @@ class HydraConsole extends Component {
       }
       // Call 1
       const rawOutput = await getRawOutput(getBody);
-      const outputText = this.convertOutput(rawOutput.data);
+      const outputText = rawOutput.data.members || rawOutput.data;
+      const pagination = rawOutput.data.view;
+      let lastPage = 1;
+      if (pagination) {
+        lastPage = extractPageNumberFromString(pagination["last"]);
+      }
+
       this.setState({
         outputText,
+        lastPage,
       });
     } else if (this.selectedOperation.method.toLowerCase() === "put") {
       let putBody = null;
@@ -380,8 +410,7 @@ class HydraConsole extends Component {
       filteredProperties["@type"] = resourceType;
       // Call 2
       const rawOutput = await getRawOutput(putBody);
-      console.log("Raw output", rawOutput);
-      const outputText = this.convertOutput(rawOutput.data);
+      const outputText = rawOutput.data;
       this.setState({
         outputText,
       });
@@ -398,7 +427,7 @@ class HydraConsole extends Component {
       };
       filteredProperties["@type"] = resourceType;
       const rawOutput = await getRawOutput(postBody);
-      const outputText = this.convertOutput(rawOutput.data);
+      const outputText = rawOutput.data;
       this.setState({
         outputText,
       });
@@ -413,17 +442,17 @@ class HydraConsole extends Component {
           this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
       };
       const rawOutput = await getRawOutput(deleteBody);
-      const outputText = this.convertOutput(rawOutput.data);
+      const outputText = rawOutput.data;
       this.setState({
         outputText,
       });
     }
   }
-
   render() {
     // Block of values that need to be re assigned every rendering update
     // They are used below along the html
     const { classes } = this.props;
+
     const selectedEndpoint = this.state.endpoints[
       this.state.selectedEndpointIndex
     ];
@@ -469,70 +498,58 @@ class HydraConsole extends Component {
     }
 
     return (
-      <Grid container className={classes.outContainer}>
-        <Grid
-          item
-          xs={12}
-          lg={5}
-          container
-          direction="column"
-          justify="space-evenly"
-          alignItems="center"
-        >
-          <EndpointsButtons
-            ref={this.child}
-            selectEndpoint={(currProperty) => {
-              this.selectEndpoint(currProperty);
-            }}
-            endpoints={this.state.endpoints}
-          ></EndpointsButtons>
+      <Grid container md={12}>
+        <Grid item xs={12} md={5}>
+          <div className={classes.endpointButtonContainerOuter}>
+            <div className={classes.endpointButtonContainerInner}>
+              <EndpointsButtons
+                ref={this.child}
+                selectEndpoint={(currProperty) => {
+                  this.selectEndpoint(currProperty);
+                }}
+                endpoints={this.state.endpoints}
+              ></EndpointsButtons>
+            </div>
+          </div>
         </Grid>
         <Grid
           item
           xs={12}
-          lg={2}
-          container
-          direction="column"
-          justify="space-evenly"
-          alignItems="center"
-        >
-          <OperationsButtons
-            operations={selectedHydraClass.supportedOperation}
-            selectedOperationIndex={this.state.selectedOperationIndex}
-            selectOperation={(currProperty) => {
-              this.selectOperation(currProperty);
-            }}
-          ></OperationsButtons>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          lg={5}
-          container
+          md={7}
           direction="column"
           justify="center"
           alignItems="center"
+          className={classes.consoleGrid}
         >
-          <Button
-            aria-label="delete"
-            size="medium"
-            variant="contained"
-            className={classes.deleteIconButton}
-            onClick={(e) => this.clearAllInputs(e)}
+          <Grid
+            item
+            justify="center"
+            alignItems="center"
+            className={classes.operationsButtonContainer}
           >
-            CLEAR
-          </Button>
+            <div className={classes.classDescription}>
+              {selectedHydraClass.description}
+            </div>
+            <div>
+              <OperationsButtons
+                operations={selectedHydraClass.supportedOperation}
+                selectedOperationIndex={this.state.selectedOperationIndex}
+                selectOperation={(currProperty) => {
+                  this.selectOperation(currProperty);
+                }}
+              ></OperationsButtons>
+            </div>
+          </Grid>
           <Grid
             className={classes.propertiesContainer}
-            container
+            item
             direction="row"
             justify="flex-start"
             alignItems="center"
           >
-            <label> {"{"} </label>
             <Grid
               className={classes.propertyContainer}
-              container
+              item
               direction="row"
               justify="flex-start"
               alignItems="center"
@@ -551,43 +568,28 @@ class HydraConsole extends Component {
             </Grid>
             {this.selectedOperation.method !== "DELETE" && (
               <PropertiesEditor
+                activatedMethod={this.selectedOperation.method}
+                endpoint={this.temporaryEndpoint}
                 properties={this.state.properties[temporaryEndpoint]}
+                metaProps={this.state.classesPropertiesWithMetaData}
                 onChange={(updatedField) => {
                   this.handleChange(updatedField);
                 }}
               ></PropertiesEditor>
             )}
-            <label> {"}"} </label>
           </Grid>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-        >
-          <CssTextField
-            id="outlined-name"
-            label="Raw Command"
-            inputProps={{
-              style: { color: GuiTheme.palette.primary.light },
-            }}
-            InputLabelProps={{
-              style: { color: GuiTheme.palette.primary.light },
-            }}
-            className={classes.textField}
-            onChange={() => {}}
-            margin="normal"
-            variant="outlined"
-            value={rawCommand}
-          />
           <Button
-            variant="contained"
-            color="secondary"
+            aria-label="delete"
+            size="medium"
+            variant="outlined"
+            className={classes.deleteIconButton}
+            onClick={(e) => this.clearAllInputs(e)}
+          >
+            CLEAR
+          </Button>
+          <Button
             className={classes.sendRequest}
-            onClick={() => this.sendCommand()}
+            onClick={() => this.sendCommand(1)}
           >
             Send Request
           </Button>
@@ -596,13 +598,46 @@ class HydraConsole extends Component {
           item
           xs={12}
           container
+          direction="row"
+          justify="center"
+          alignItems="center"
+          className={classes.rawCommandGrid}
+        >
+          <CssTextField
+            id="outlined-name"
+            label="Raw Command"
+            className={classes.textField}
+            onChange={() => {}}
+            margin="normal"
+            variant="outlined"
+            value={rawCommand}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={11}
           direction="column"
           justify="center"
           alignItems="center"
+          className={classes.responseGrid}
         >
-          <span className={classes.outputContainerHeader}> Output</span>
+          <span className={classes.outputContainerHeader}> RESPONSE</span>
           <div className={classes.outputContainer}>
-            <Scrollbars>{this.state.outputText}</Scrollbars>
+            {typeof this.state.outputText === "string" ? (
+              <ReactJson
+                src={{ msg: "Your Output will be displayed here" }}
+                name={null}
+              />
+            ) : (
+              <ReactJson src={this.state.outputText} name={null} />
+            )}
+          </div>
+          <div className={classes.pages}>
+            <Pagination
+              last_page={this.state.lastPage}
+              paginate={this.changePage.bind(this)}
+            />
           </div>
         </Grid>
       </Grid>
