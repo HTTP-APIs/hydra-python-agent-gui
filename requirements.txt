@@ -2,5 +2,5 @@ flask
 Flask-Cors
 -e git+https://github.com/RedisGraph/redisgraph-py#egg=redisgraph
 -e git+https://github.com/HTTP-APIs/hydra-python-core#egg=hydra_python_core
--e git://github.com/priyanshunayan/hydra-python-agent.git@get-request#egg=hydra_agent
+-e git://github.com/HTTP-APIs/hydra-python-agent.git@develop#egg=hydra_agent
 
