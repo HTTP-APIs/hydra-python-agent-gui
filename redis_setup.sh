@@ -12,13 +12,13 @@ else
 fi
 
 # after getting the docker-ce, check if `redislabs/redisgraph` docker image is not installed then install ii. 
-if [ -z "$(docker images -q redislabs/redisgraph:2.0-edge)" ]
+if [ -z "$(docker images -q redislabs/redisgraph:latest)" ]
 then
-    echo "Docker already have a redislabs/redisgraph:2.0-edge image"
+    echo "Docker already have a redislabs/redisgraph:latest image"
 
 else 
-    sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:2.0-edge
+    sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:latest
 fi
 
 # Command to run the Redis directly 
-# sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:2.0-edge
+# sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:latest
