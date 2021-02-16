@@ -6,12 +6,20 @@ fi
 
 # It will check if docker is not installed, if not it will install it.
 docker -v
-if [ "$?" = "127" ]
-then
-sudo apt-get update
-sudo apt-get install docker
-sudo apt-get install docker-compose
-
+if [ "$?" = "127" ]; then
+    # Check if pacman is installed
+    which pacman
+    arch=$?
+    # Check if apt-get is installed
+    which apt-get
+    deb=$?
+    if [[ $arch -eq 0 ]]; then
+        sudo pacman -Syy
+        sudo pacman -S docker docker-compose
+    elif [[ $deb -eq 0 ]]; then
+        sudo apt-get update
+        sudo apt-get docker docker-compose
+    fi
 else
     echo "Docker is already installed"
 fi
