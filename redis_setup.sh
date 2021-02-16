@@ -1,3 +1,8 @@
+# Check super user privilige
+if [[ $(id -u) -ne 0 ]]; then
+echo "Run with superuser priviliges"
+exit
+fi
 
 # It will check if docker is not installed, if not it will install it.
 docker -v
@@ -11,14 +16,14 @@ else
     echo "Docker is already installed"
 fi
 
-# after getting the docker-ce, check if `redislabs/redisgraph` docker image is not installed then install ii. 
+# after getting the docker-ce, check if `redislabs/redisgraph` docker image is not installed then install ii.
 if [ -z "$(docker images -q redislabs/redisgraph:latest)" ]
 then
     echo "Docker already have a redislabs/redisgraph:latest image"
 
-else 
+else
     sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:latest
 fi
 
-# Command to run the Redis directly 
+# Command to run the Redis directly
 # sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:latest
