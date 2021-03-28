@@ -30,7 +30,7 @@ python3 app.py
 
 ### Contributing to the GUI
 
-This repository is divided in two parts, the Middle-Layer/Backend with flask under ```app.py``` and the React project under the folder ```console-frontend```. 
+This repository is divided in two parts, the Middle-Layer/Backend with Flask under ```app.py``` and the React project under the folder ```console-frontend```. 
 
 **The Flask Backend** is built to communicate with the Python Agent package. It declares five endpoints which are used for this:
 
@@ -42,4 +42,4 @@ This repository is divided in two parts, the Middle-Layer/Backend with flask und
 
 **The React Frontend**
 
-Go the the README.md inside console-frontend for further information. If you make modifications inside console-frontend, make sure to run ```npm run build``` to create a updated production build. 
+Go the the README.md inside ```console-frontend``` for further information. If you make modifications inside ```console-frontend```, make sure to run ```npm run build``` to create a updated production build. 
