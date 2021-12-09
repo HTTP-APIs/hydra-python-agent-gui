@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Input from "@material-ui/core/Input";
@@ -24,7 +24,7 @@ import {
 // Service Import
 import getRawOutput from "../../services/send-command.js";
 // Custom Css modification to Raw Command Input field
-const CssTextField = withStyles({
+const CssTextField = withStyles( {
   root: {
     // "& label.Mui-focused": {
     //   color: GuiTheme.palette.primary.light,
@@ -45,10 +45,10 @@ const CssTextField = withStyles({
     //   },
     // },
   },
-})(TextField);
+} )( TextField );
 
 // Css Styles to the Components
-const styles = (theme) => ({
+const styles = ( theme ) => ( {
   propertiesContainer: {
     maxHeight: "30vh",
     width: "100%",
@@ -160,216 +160,209 @@ const styles = (theme) => ({
     display: "flex",
     justifyContent: "center",
   },
-});
+} );
 
-class HydraConsole extends Component {
-  constructor(props) {
-    super(props);
-    this.child = React.createRef();
-    let endpoints = null;
-    const classesMapping = [];
-    this.agentEndpoint = "";
+const HydraConsole = ( props ) => {
+  let child = React.createRef();
+  let endpoints = null;
+  const classesMapping = [];
+  let agentEndpoint = "";
 
-    // util variables
-    this.temporaryEndpoint = null;
-    this.previousEndpointIndex = 0; // for managing the state and local storage
-    this.selectedEndpoint = null;
-    this.selectedOperation = null;
-    this.getURL = true;
+  // util variables
+  let previousEndpointIndex = 0; // for managing the state and local storage
+  let getURL = true;
 
-    // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
-    for (const index in this.props.hydraClasses) {
-      classesMapping[
-        this.props.hydraClasses[index]["@id"]
-      ] = this.props.hydraClasses[index];
-      if (this.props.hydraClasses[index]["@id"] === "vocab:EntryPoint") {
-        endpoints = this.props.hydraClasses[index].supportedProperty;
-      }
+  // Modifying reference from indexed array[0, 1, 2] to name ["vocab:Drone", "vocab:.."]
+  for ( const index in props.hydraClasses ) {
+    classesMapping[
+      props.hydraClasses[index]["@id"]
+    ] = props.hydraClasses[index];
+    if ( props.hydraClasses[index]["@id"] === "vocab:EntryPoint" ) {
+      endpoints = props.hydraClasses[index].supportedProperty;
     }
-
-    // Initializing empty array with all properties in the ApiDoc
-    let classesProperties = {};
-    let resourcesIDs = {};
-    let classesPropertiesWithMetaData = {};
-    for (const auxClass in classesMapping) {
-      classesProperties[classesMapping[auxClass]["@id"]] = {};
-      classesPropertiesWithMetaData[auxClass] = [];
-      // Creating the array that will maintain the Resources IDs
-      resourcesIDs[classesMapping[auxClass]["@id"]] = {};
-      resourcesIDs[classesMapping[auxClass]["@id"]]["ResourceID"] = "";
-      for (const auxProperty in classesMapping[auxClass].supportedProperty) {
-        classesProperties[classesMapping[auxClass]["@id"]][
-          classesMapping[auxClass].supportedProperty[auxProperty].title
-        ] = "";
-        classesPropertiesWithMetaData[auxClass].push({
-          property:
-            classesMapping[auxClass].supportedProperty[auxProperty].title,
-          required:
-            classesMapping[auxClass].supportedProperty[auxProperty].required,
-        });
-      }
-    }
-
-    // Initialize the local storage with the empty values
-    if (getFromLocalStorage("properties") === null) {
-      setInLocalStorage("properties", JSON.stringify(classesProperties));
-    } else {
-      classesProperties = JSON.parse(getFromLocalStorage("properties"));
-    }
-
-    if (getFromLocalStorage("resourceIDs") === null) {
-      setInLocalStorage("resourceIDs", JSON.stringify(resourcesIDs));
-    } else {
-      resourcesIDs = JSON.parse(getFromLocalStorage("resourceIDs"));
-    }
-    this.state = {
-      hydraClasses: classesMapping,
-      classesPropertiesWithMetaData,
-      endpoints: endpoints,
-      properties: classesProperties,
-      resourcesIDs: resourcesIDs,
-      selectedEndpointIndex: 0,
-      selectedOperationIndex: 1,
-      getPage: 1,
-      outputText: " Your request output will be displayed here...",
-    };
-  }
-  componentDidUpdate() {
-    this.restorePropertiesAndResourceIDs();
   }
 
-  changePage(e, page) {
-    this.sendCommand(page);
+  // Initializing empty array with all properties in the ApiDoc
+  let classesProperties = {};
+  let resourcesIDs = {};
+  let classesPropertiesWithMetaData = {};
+  for ( const auxClass in classesMapping ) {
+    classesProperties[classesMapping[auxClass]["@id"]] = {};
+    classesPropertiesWithMetaData[auxClass] = [];
+    // Creating the array that will maintain the Resources IDs
+    resourcesIDs[classesMapping[auxClass]["@id"]] = {};
+    resourcesIDs[classesMapping[auxClass]["@id"]]["ResourceID"] = "";
+    for ( const auxProperty in classesMapping[auxClass].supportedProperty ) {
+      classesProperties[classesMapping[auxClass]["@id"]][
+        classesMapping[auxClass].supportedProperty[auxProperty].title
+      ] = "";
+      classesPropertiesWithMetaData[auxClass].push( {
+        property:
+          classesMapping[auxClass].supportedProperty[auxProperty].title,
+        required:
+          classesMapping[auxClass].supportedProperty[auxProperty].required,
+      } );
+    }
   }
-  restorePropertiesAndResourceIDs() {
-    if (this.previousEndpointIndex !== this.state.selectedEndpointIndex) {
-      const storedProperties = JSON.parse(getFromLocalStorage("properties"));
-      const storedResourceIDs = JSON.parse(getFromLocalStorage("resourceIDs"));
 
-      this.setState({
+  // Initialize the local storage with the empty values
+  if ( getFromLocalStorage( "properties" ) === null ) {
+    setInLocalStorage( "properties", JSON.stringify( classesProperties ) );
+  } else {
+    classesProperties = JSON.parse( getFromLocalStorage( "properties" ) );
+  }
+
+  if ( getFromLocalStorage( "resourceIDs" ) === null ) {
+    setInLocalStorage( "resourceIDs", JSON.stringify( resourcesIDs ) );
+  } else {
+    resourcesIDs = JSON.parse( getFromLocalStorage( "resourceIDs" ) );
+  }
+  const [state, setState] = useState( {
+    hydraClasses: classesMapping,
+    classesPropertiesWithMetaData,
+    endpoints: endpoints,
+    properties: classesProperties,
+    resourcesIDs: resourcesIDs,
+    selectedEndpointIndex: 0,
+    selectedOperationIndex: 1,
+    getPage: 1,
+    outputText: " Your request output will be displayed here...",
+  } );
+  useEffect( () => {
+    restorePropertiesAndResourceIDs();
+  }, [] )
+  function changePage( e, page ) {
+    sendCommand( page );
+  }
+  function restorePropertiesAndResourceIDs() {
+    if ( previousEndpointIndex !== state.selectedEndpointIndex ) {
+      const storedProperties = JSON.parse( getFromLocalStorage( "properties" ) );
+      const storedResourceIDs = JSON.parse( getFromLocalStorage( "resourceIDs" ) );
+
+      setState( {
         properties: storedProperties,
         resourcesIDs: storedResourceIDs,
-      });
+      } );
 
       // updating for next time
-      this.previousEndpointIndex = this.state.selectedEndpointIndex;
+      previousEndpointIndex = state.selectedEndpointIndex;
     }
   }
 
-  selectEndpoint(endpointIndex, op = "GET") {
-    const selectedEndpoint = this.state.endpoints[endpointIndex];
-    this.selectedEndpoint = selectedEndpoint;
-    this.child.current.selectButton(endpointIndex);
+  function selectEndpoint( endpointIndex, op = "GET" ) {
+    const selectedEndpoint = state.endpoints[endpointIndex];
+    selectedEndpoint = selectedEndpoint;
+    child.current.selectButton( endpointIndex );
     const temporaryEndpoint = selectedEndpoint.property.range.replace(
       "Collection",
       ""
     );
-    this.temporaryEndpoint = temporaryEndpoint;
+    temporaryEndpoint = temporaryEndpoint;
 
-    const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
+    const selectedHydraClass = state.hydraClasses[temporaryEndpoint];
     const operations = selectedHydraClass.supportedOperation;
     let selectedOperationIndex = 0;
-    operations.forEach((operation, index) => {
-      if (operation.method === op) selectedOperationIndex = index;
-    });
+    operations.forEach( ( operation, index ) => {
+      if ( operation.method === op ) selectedOperationIndex = index;
+    } );
 
-    this.setState({
+    setState( {
       selectedEndpointIndex: endpointIndex,
       selectedOperationIndex: selectedOperationIndex,
-    });
+    } );
   }
 
-  selectOperation(operationIndex) {
-    this.setState({ selectedOperationIndex: operationIndex });
+  function selectOperation( operationIndex ) {
+    setState( { selectedOperationIndex: operationIndex } );
   }
 
-  handleChange(e) {
+  const handleChange = ( e ) => {
     // Boolean variable that says we will fetch by resource type
-    this.getURL = false;
+    getURL = false;
 
-    const auxProperties = Object.assign({}, this.state.properties);
-    auxProperties[this.temporaryEndpoint][e.target.name] = e.target.value;
+    const auxProperties = Object.assign( {}, state.properties );
+    auxProperties[temporaryEndpoint][e.target.name] = e.target.value;
 
-    setInLocalStorage("properties", JSON.stringify(auxProperties));
+    setInLocalStorage( "properties", JSON.stringify( auxProperties ) );
 
-    this.setState({
+    setState( {
       properties: auxProperties,
-    });
+    } );
   }
 
-  handleChangeResourceID(e) {
+  function handleChangeResourceID( e ) {
     // Fetch will work by URL
-    this.getURL = true;
+    getURL = true;
 
-    const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
+    const resourcesIDs = Object.assign( {}, state.resourcesIDs );
     resourcesIDs[e.target.name]["ResourceID"] = e.target.value;
 
-    setInLocalStorage("resourceIDs", JSON.stringify(resourcesIDs));
+    setInLocalStorage( "resourceIDs", JSON.stringify( resourcesIDs ) );
 
-    this.setState({
+    setState( {
       resourcesIDs: resourcesIDs,
-    });
+    } );
   }
 
-  clearAllInputs(e) {
+  function clearAllInputs( e ) {
     // Will clear the current endpoints input
-    const auxProperties = Object.assign({}, this.state.properties);
-    Object.keys(auxProperties[this.temporaryEndpoint]).forEach((name) => {
-      auxProperties[this.temporaryEndpoint][name] = "";
-    });
+    const auxProperties = Object.assign( {}, state.properties );
+    Object.keys( auxProperties[temporaryEndpoint] ).forEach( ( name ) => {
+      auxProperties[temporaryEndpoint][name] = "";
+    } );
 
-    const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
-    Object.keys(resourcesIDs).forEach((name) => {
+    const resourcesIDs = Object.assign( {}, state.resourcesIDs );
+    Object.keys( resourcesIDs ).forEach( ( name ) => {
       resourcesIDs[name]["ResourceID"] = "";
-    });
+    } );
 
-    setInLocalStorage("properties", JSON.stringify(auxProperties));
-    setInLocalStorage("resourceIDs", JSON.stringify(resourcesIDs));
+    setInLocalStorage( "properties", JSON.stringify( auxProperties ) );
+    setInLocalStorage( "resourceIDs", JSON.stringify( resourcesIDs ) );
 
-    this.setState({
+    setState( {
       properties: auxProperties,
       resourcesIDs: resourcesIDs,
-    });
+    } );
   }
 
-  setResourceID(name, value) {
-    // This is a ulitlity method to set the Resource Field id from clicking on the output link in output console
-    this.getURL = true;
-    const resourcesIDs = Object.assign({}, this.state.resourcesIDs);
-    resourcesIDs[name]["ResourceID"] = value.split("/").pop();
-    setInLocalStorage("resourceIDs", JSON.stringify(resourcesIDs));
-    this.setState({
+  function setResourceID( name, value ) {
+    // This is a utility method to set the Resource Field id from clicking on the output link in output console
+    getURL = true;
+    const resourcesIDs = Object.assign( {}, state.resourcesIDs );
+    resourcesIDs[name]["ResourceID"] = value.split( "/" ).pop();
+    setInLocalStorage( "resourceIDs", JSON.stringify( resourcesIDs ) );
+    setState( {
       resourcesIDs: resourcesIDs,
-    });
+    } );
   }
-  async sendCommand(page) {
-    const properties = this.state.properties[this.temporaryEndpoint];
+  async function sendCommand( page ) {
+    const properties = state.properties[temporaryEndpoint];
     const filteredProperties = {};
-    for (const property in properties) {
-      if (properties[property] !== "") {
+    for ( const property in properties ) {
+      if ( properties[property] !== "" ) {
         filteredProperties[property] = properties[property];
       }
     }
 
-    const resourceType = this.selectedEndpoint.property.label.replace(
+    const resourceType = selectedEndpoint.property.label.replace(
       "Collection",
       ""
     );
 
-    if (this.selectedOperation.method.toLowerCase() === "get") {
+    if ( selectedOperation.method.toLowerCase() === "get" ) {
       filteredProperties["page"] = page;
       let getBody = null;
       let url = "";
-      if (this.getURL) {
-        if (this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"]) {
+      if ( getURL ) {
+        if ( state.resourcesIDs[temporaryEndpoint]["ResourceID"] ) {
           url =
-            this.props.serverUrl +
-            this.selectedEndpoint.property.label +
+            props.serverUrl +
+            selectedEndpoint.property.label +
             "/" +
-            this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"];
+            state.resourcesIDs[temporaryEndpoint]["ResourceID"];
         } else {
           url =
-            this.props.serverUrl + this.selectedEndpoint.property.label + "/";
+            props.serverUrl + selectedEndpoint.property.label + "/";
         }
         getBody = {
           method: "get",
@@ -384,265 +377,264 @@ class HydraConsole extends Component {
         };
       }
       // Call 1
-      const rawOutput = await getRawOutput(getBody);
+      const rawOutput = await getRawOutput( getBody );
       const outputText = rawOutput.data.members || rawOutput.data;
       const pagination = rawOutput.data.view;
       let lastPage = 1;
-      if (pagination) {
-        lastPage = extractPageNumberFromString(pagination["last"]);
+      if ( pagination ) {
+        lastPage = extractPageNumberFromString( pagination["last"] );
       }
 
-      this.setState({
+      setState( {
         outputText,
         lastPage,
-      });
-    } else if (this.selectedOperation.method.toLowerCase() === "put") {
+      } );
+    } else if ( selectedOperation.method.toLowerCase() === "put" ) {
       let putBody = null;
       putBody = {
         method: "put",
         url:
-          this.props.serverUrl +
-          this.selectedEndpoint.property.label +
+          props.serverUrl +
+          selectedEndpoint.property.label +
           "/" +
-          this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
+          state.resourcesIDs[temporaryEndpoint]["ResourceID"],
         new_object: filteredProperties,
       };
       filteredProperties["@type"] = resourceType;
       // Call 2
-      const rawOutput = await getRawOutput(putBody);
+      const rawOutput = await getRawOutput( putBody );
       const outputText = rawOutput.data;
-      this.setState({
+      setState( {
         outputText,
-      });
-    } else if (this.selectedOperation.method.toLowerCase() === "post") {
+      } );
+    } else if ( selectedOperation.method.toLowerCase() === "post" ) {
       let postBody = null;
       postBody = {
         method: "post",
         url:
-          this.props.serverUrl +
-          this.selectedEndpoint.property.label +
+          props.serverUrl +
+          selectedEndpoint.property.label +
           "/" +
-          this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
+          state.resourcesIDs[temporaryEndpoint]["ResourceID"],
         updated_object: filteredProperties,
       };
       filteredProperties["@type"] = resourceType;
-      const rawOutput = await getRawOutput(postBody);
+      const rawOutput = await getRawOutput( postBody );
       const outputText = rawOutput.data;
-      this.setState({
+      setState( {
         outputText,
-      });
-    } else if (this.selectedOperation.method.toLowerCase() === "delete") {
+      } );
+    } else if ( selectedOperation.method.toLowerCase() === "delete" ) {
       let deleteBody = null;
       deleteBody = {
         method: "delete",
         url:
-          this.props.serverUrl +
-          this.selectedEndpoint.property.label +
+          props.serverUrl +
+          selectedEndpoint.property.label +
           "/" +
-          this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"],
+          state.resourcesIDs[temporaryEndpoint]["ResourceID"],
       };
-      const rawOutput = await getRawOutput(deleteBody);
+      const rawOutput = await getRawOutput( deleteBody );
       const outputText = rawOutput.data;
-      this.setState({
+      setState( {
         outputText,
-      });
+      } );
     }
   }
-  render() {
-    // Block of values that need to be re assigned every rendering update
-    // They are used below along the html
-    const { classes } = this.props;
+  // Block of values that need to be re assigned every rendering update
+  // They are used below along the html
+  const { classes } = props;
 
-    const selectedEndpoint = this.state.endpoints[
-      this.state.selectedEndpointIndex
-    ];
-    this.selectedEndpoint = selectedEndpoint;
+  const selectedEndpoint = state.endpoints[
+    state.selectedEndpointIndex
+  ];
+  selectedEndpoint = selectedEndpoint;
 
-    const temporaryEndpoint = selectedEndpoint.property.range.replace(
-      "Collection",
-      ""
-    );
-    this.temporaryEndpoint = temporaryEndpoint;
+  const temporaryEndpoint = selectedEndpoint.property.range.replace(
+    "Collection",
+    ""
+  );
+  temporaryEndpoint = temporaryEndpoint;
 
-    const selectedHydraClass = this.state.hydraClasses[temporaryEndpoint];
+  const selectedHydraClass = state.hydraClasses[temporaryEndpoint];
 
-    const selectedOperation =
-      selectedHydraClass.supportedOperation[this.state.selectedOperationIndex];
-    this.selectedOperation = selectedOperation;
+  const selectedOperation =
+    selectedHydraClass.supportedOperation[state.selectedOperationIndex];
+  selectedOperation = selectedOperation;
 
-    const stringProps = JSON.stringify(
-      this.state.properties[temporaryEndpoint],
-      jsonStringifyReplacer
-    );
+  const stringProps = JSON.stringify(
+    state.properties[temporaryEndpoint],
+    jsonStringifyReplacer
+  );
 
-    let rawCommand = "";
-    if (this.getURL) {
-      rawCommand =
-        "agent." +
-        this.selectedOperation.method.toLowerCase() +
-        '("' +
-        this.props.serverUrl +
-        this.selectedEndpoint.property.label +
-        "/" +
-        this.state.resourcesIDs[this.temporaryEndpoint]["ResourceID"] +
-        '")';
-    } else {
-      rawCommand =
-        "agent." +
-        this.selectedOperation.method.toLowerCase() +
-        '("/' +
-        selectedEndpoint.property.label +
-        '", ' +
-        stringProps +
-        ")";
-    }
+  let rawCommand = "";
+  if ( getURL ) {
+    rawCommand =
+      "agent." +
+      selectedOperation.method.toLowerCase() +
+      '("' +
+      props.serverUrl +
+      selectedEndpoint.property.label +
+      "/" +
+      state.resourcesIDs[temporaryEndpoint]["ResourceID"] +
+      '")';
+  } else {
+    rawCommand =
+      "agent." +
+      selectedOperation.method.toLowerCase() +
+      '("/' +
+      selectedEndpoint.property.label +
+      '", ' +
+      stringProps +
+      ")";
+  }
 
-    return (
-      <Grid container md={12}>
-        <Grid item xs={12} md={5}>
-          <div className={classes.endpointButtonContainerOuter}>
-            <div className={classes.endpointButtonContainerInner}>
-              <EndpointsButtons
-                ref={this.child}
-                selectEndpoint={(currProperty) => {
-                  this.selectEndpoint(currProperty);
-                }}
-                endpoints={this.state.endpoints}
-              ></EndpointsButtons>
-            </div>
+  return (
+    <Grid container md={12}>
+      <Grid item xs={12} md={5}>
+        <div className={classes.endpointButtonContainerOuter}>
+          <div className={classes.endpointButtonContainerInner}>
+            <EndpointsButtons
+              ref={child}
+              selectEndpoint={( currProperty ) => {
+                selectEndpoint( currProperty );
+              }}
+              endpoints={state.endpoints}
+            ></EndpointsButtons>
+          </div>
+        </div>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        md={7}
+        direction="column"
+        justify="center"
+        alignItems="center"
+        className={classes.consoleGrid}
+      >
+        <Grid
+          item
+          justify="center"
+          alignItems="center"
+          className={classes.operationsButtonContainer}
+        >
+          <div className={classes.classDescription}>
+            {selectedHydraClass.description}
+          </div>
+          <div>
+            <OperationsButtons
+              operations={selectedHydraClass.supportedOperation}
+              selectedOperationIndex={state.selectedOperationIndex}
+              selectOperation={( currProperty ) => {
+                selectOperation( currProperty );
+              }}
+            ></OperationsButtons>
           </div>
         </Grid>
         <Grid
+          className={classes.propertiesContainer}
           item
-          xs={12}
-          md={7}
-          direction="column"
-          justify="center"
+          direction="row"
+          justify="flex-start"
           alignItems="center"
-          className={classes.consoleGrid}
         >
           <Grid
-            item
-            justify="center"
-            alignItems="center"
-            className={classes.operationsButtonContainer}
-          >
-            <div className={classes.classDescription}>
-              {selectedHydraClass.description}
-            </div>
-            <div>
-              <OperationsButtons
-                operations={selectedHydraClass.supportedOperation}
-                selectedOperationIndex={this.state.selectedOperationIndex}
-                selectOperation={(currProperty) => {
-                  this.selectOperation(currProperty);
-                }}
-              ></OperationsButtons>
-            </div>
-          </Grid>
-          <Grid
-            className={classes.propertiesContainer}
+            className={classes.propertyContainer}
             item
             direction="row"
             justify="flex-start"
             alignItems="center"
           >
-            <Grid
-              className={classes.propertyContainer}
-              item
-              direction="row"
-              justify="flex-start"
-              alignItems="center"
-            >
-              <label className={classes.propertyInput}>ResourceID:</label>
-              <Input
-                name={temporaryEndpoint}
-                value={this.state.resourcesIDs[temporaryEndpoint]["ResourceID"]}
-                onChange={(e) => this.handleChangeResourceID(e)}
-                onFocus={(e) => this.handleChangeResourceID(e)}
-                className={classes.input}
-                inputProps={{
-                  "aria-label": "description",
-                }}
-              />
-            </Grid>
-            {this.selectedOperation.method !== "DELETE" && (
-              <PropertiesEditor
-                activatedMethod={this.selectedOperation.method}
-                endpoint={this.temporaryEndpoint}
-                properties={this.state.properties[temporaryEndpoint]}
-                metaProps={this.state.classesPropertiesWithMetaData}
-                onChange={(updatedField) => {
-                  this.handleChange(updatedField);
-                }}
-              ></PropertiesEditor>
-            )}
-          </Grid>
-          <Button
-            aria-label="delete"
-            size="medium"
-            variant="outlined"
-            className={classes.deleteIconButton}
-            onClick={(e) => this.clearAllInputs(e)}
-          >
-            CLEAR
-          </Button>
-          <Button
-            className={classes.sendRequest}
-            onClick={() => this.sendCommand(1)}
-          >
-            Send Request
-          </Button>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          className={classes.rawCommandGrid}
-        >
-          <CssTextField
-            id="outlined-name"
-            label="Raw Command"
-            className={classes.textField}
-            onChange={() => {}}
-            margin="normal"
-            variant="outlined"
-            value={rawCommand}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={11}
-          direction="column"
-          justify="center"
-          alignItems="center"
-          className={classes.responseGrid}
-        >
-          <span className={classes.outputContainerHeader}> RESPONSE</span>
-          <div className={classes.outputContainer}>
-            {typeof this.state.outputText === "string" ? (
-              <ReactJson
-                src={{ msg: "Your Output will be displayed here" }}
-                name={null}
-              />
-            ) : (
-              <ReactJson src={this.state.outputText} name={null} />
-            )}
-          </div>
-          <div className={classes.pages}>
-            <Pagination
-              last_page={this.state.lastPage}
-              paginate={this.changePage.bind(this)}
+            <label className={classes.propertyInput}>ResourceID:</label>
+            <Input
+              name={temporaryEndpoint}
+              value={state.resourcesIDs[temporaryEndpoint]["ResourceID"]}
+              onChange={( e ) => handleChangeResourceID( e )}
+              onFocus={( e ) => handleChangeResourceID( e )}
+              className={classes.input}
+              inputProps={{
+                "aria-label": "description",
+              }}
             />
-          </div>
+          </Grid>
+          {selectedOperation.method !== "DELETE" && (
+            <PropertiesEditor
+              activatedMethod={selectedOperation.method}
+              endpoint={temporaryEndpoint}
+              properties={state.properties[temporaryEndpoint]}
+              metaProps={state.classesPropertiesWithMetaData}
+              onChange={( updatedField ) => {
+                handleChange( updatedField );
+              }}
+            ></PropertiesEditor>
+          )}
         </Grid>
+        <Button
+          aria-label="delete"
+          size="medium"
+          variant="outlined"
+          className={classes.deleteIconButton}
+          onClick={( e ) => clearAllInputs( e )}
+        >
+          CLEAR
+        </Button>
+        <Button
+          className={classes.sendRequest}
+          onClick={() => sendCommand( 1 )}
+        >
+          Send Request
+        </Button>
       </Grid>
-    );
-  }
+      <Grid
+        item
+        xs={12}
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        className={classes.rawCommandGrid}
+      >
+        <CssTextField
+          id="outlined-name"
+          label="Raw Command"
+          className={classes.textField}
+          onChange={() => { }}
+          margin="normal"
+          variant="outlined"
+          value={rawCommand}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        md={11}
+        direction="column"
+        justify="center"
+        alignItems="center"
+        className={classes.responseGrid}
+      >
+        <span className={classes.outputContainerHeader}> RESPONSE</span>
+        <div className={classes.outputContainer}>
+          {typeof state.outputText === "string" ? (
+            <ReactJson
+              src={{ msg: "Your Output will be displayed here" }}
+              name={null}
+            />
+          ) : (
+            <ReactJson src={state.outputText} name={null} />
+          )}
+        </div>
+        <div className={classes.pages}>
+          <Pagination
+            last_page={state.lastPage}
+            paginate={changePage.bind( this )}
+          />
+        </div>
+      </Grid>
+    </Grid>
+  );
+
 }
 
-export default withStyles(styles)(HydraConsole);
+export default withStyles( styles )( HydraConsole );
