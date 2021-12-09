@@ -32,7 +32,7 @@ function extractPageNumberFromString(str) {
   return str[indexPage + 5];
 }
 
-module.exports = {
+export default {
   isArray,
   isString,
   isObject,

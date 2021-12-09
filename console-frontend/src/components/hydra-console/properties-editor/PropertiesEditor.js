@@ -49,7 +49,7 @@ class PropertiesEditor extends React.Component {
           }}
         />
         <small className={classes.required}>
-          {prop.required == true ? "(required)" : "(optional)"}
+          {prop.required === true ? "(required)" : "(optional)"}
         </small>
       </Grid>
     );
