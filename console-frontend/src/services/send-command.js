@@ -2,13 +2,14 @@ import axios from "axios";
 
 const agentEndpoint = "";
 
-const getRawOutput = (body) => {
-  return axios
-    .post(`${agentEndpoint}/send-command`, body)
-    .then((response) => {
-      return response;
-    })
-    .catch((err) => console.error(err));
+const getRawOutput = async (body) => {
+  try {
+    const response = await axios
+      .post( `${ agentEndpoint }/send-command`, body );
+    return response;
+  } catch ( err ) {
+    return console.error( err );
+  }
 };
 
 export default getRawOutput;

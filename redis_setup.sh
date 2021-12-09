@@ -17,7 +17,7 @@ then
     echo "Docker already have a redislabs/redisgraph:latest image"
 
 else 
-    sudo docker run -p 6379:6379 -it --rm redislabs/redisgraph:latest
+    docker run -p 6379:6379 -it --rm redislabs/redisgraph:latest
 fi
 
 # Command to run the Redis directly 

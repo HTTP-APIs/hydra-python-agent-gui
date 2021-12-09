@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import logo from "../../assets/images/hydra_eco_logo.png";
 import github_logo from "../../assets/images/GitHub.png";
-const useStyles = makeStyles({
+const useStyles = makeStyles( {
   hydraEcoLogo: {
     maxWidth: "30px",
     cursor: "pointer",
@@ -26,10 +26,16 @@ const useStyles = makeStyles({
   fab: {
     boxShadow: "none",
   },
-});
+} );
 
-const NavBar = (props) => {
+const NavBar = ( props ) => {
   const classes = useStyles();
+  // Optimized as it is a static function
+  const handleOnClick = useCallback( () => {
+    window.open(
+      "https://github.com/HTTP-APIs/hydra-python-agent-gui"
+    )
+  } )
   return (
     <div>
       <AppBar position="static" className={classes.AppBar} color={props.color}>
@@ -37,7 +43,7 @@ const NavBar = (props) => {
           {props.onClick && (
             <img
               src={logo}
-              onClick={() => window.open("http://www.hydraecosystem.org/")}
+              onClick={() => window.open( "http://www.hydraecosystem.org/" )}
               className={classes.hydraEcoLogo}
               alt="logo"
             />
@@ -60,11 +66,7 @@ const NavBar = (props) => {
           {props.onClick && (
             <img
               src={github_logo}
-              onClick={() =>
-                window.open(
-                  "https://github.com/HTTP-APIs/hydra-python-agent-gui"
-                )
-              }
+              onClick={handleOnClick}
               className={classes.hydraEcoLogo}
               alt="logo"
             />
