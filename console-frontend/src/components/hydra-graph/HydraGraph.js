@@ -5,7 +5,7 @@ import { DataSet, Network } from "visjs-network";
 const styles = (theme) => ({
   graphContainer: {
     height: "500px",
-    backgroundColor: "#FFF",
+    backgroundColor: '#EEEEEE',
     margin: "0 1em",
     borderRadius: "8px",
     width: "90%",
