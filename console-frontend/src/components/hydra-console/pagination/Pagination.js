@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-function Pagination({ last_page, paginate }) {
+const  Pagination=({ last_page, paginate })  =>{
   const classes = useStyles();
   const paged = [];
   if (last_page > 1) {

@@ -290,7 +290,7 @@ const HydraConsole = ( props ) => {
     } );
   }
 
-  function handleChangeResourceID( e ) {
+  const handleChangeResourceID = ( e ) => {
     // Fetch will work by URL
     getURL = true;
 
@@ -304,7 +304,7 @@ const HydraConsole = ( props ) => {
     } );
   }
 
-  function clearAllInputs( e ) {
+  const  clearAllInputs = ( e ) => {
     // Will clear the current endpoints input
     const auxProperties = Object.assign( {}, state.properties );
     Object.keys( auxProperties[temporaryEndpoint] ).forEach( ( name ) => {
@@ -325,7 +325,7 @@ const HydraConsole = ( props ) => {
     } );
   }
 
-  function setResourceID( name, value ) {
+  const setResourceID = ( name, value ) => {
     // This is a utility method to set the Resource Field id from clicking on the output link in output console
     getURL = true;
     const resourcesIDs = Object.assign( {}, state.resourcesIDs );
@@ -335,7 +335,7 @@ const HydraConsole = ( props ) => {
       resourcesIDs: resourcesIDs,
     } );
   }
-  async function sendCommand( page ) {
+  async const sendCommand = ( page ) => {
     const properties = state.properties[temporaryEndpoint];
     const filteredProperties = {};
     for ( const property in properties ) {
