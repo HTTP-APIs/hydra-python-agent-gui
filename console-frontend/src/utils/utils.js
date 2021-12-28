@@ -1,33 +1,33 @@
-function isArray(value) {
+const isArray = (value) => {
   // utility method that returns boolean value
   return value && typeof value === "object" && value.constructor === Array;
 }
 
-function isString(value) {
+const isString = (value) => {
   // utility method that returns boolean value
   return typeof value === "string" || value instanceof String;
 }
-function isObject(value) {
+const isObject = (value) => {
   // utility method that returns boolean value
   return value && typeof value === "object" && value.constructor === Object;
 }
 
-function setInLocalStorage(name, value) {
+const setInLocalStorage = (name, value) => {
   localStorage.setItem(name, value);
 }
 
-function getFromLocalStorage(name) {
+const getFromLocalStorage = (name) => {
   return localStorage.getItem(name);
 }
 
-function jsonStringifyReplacer(key, value) {
+const jsonStringifyReplacer = (key, value) => {
   // Filtering out properties
   if (value === "") {
     return undefined;
   }
   return value;
 }
-function extractPageNumberFromString(str) {
+const extractPageNumberFromString = (str) => {
   const indexPage = str.indexOf("page=");
   return str[indexPage + 5];
 }

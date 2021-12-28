@@ -136,13 +136,13 @@ const AgentGUI = ( props ) => {
     }
   }
 
-  function handleChangeServerURL( e ) {
+  const handleChangeServerURL = e => {
     setState( {
       serverURL: e.target.value,
     } );
   }
 
-  async function submitServerURL( e ) {
+  async const submitServerURL = ( e ) => {
     await startAgent( state.serverURL );
     const hydradoc = await getHydraDoc();
     setState( {
