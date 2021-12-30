@@ -22,9 +22,9 @@ const styles = (theme) => ({
   },
 });
 
-class PropertiesEditor extends React.Component {
-  generateField(propertyName, placeholder = null, metaProps, endpoint) {
-    const { classes } = this.props;
+function PropertiesEditor(props) {
+  const generateField = (propertyName, placeholder = null, metaProps, endpoint) => {
+    const { classes } = props;
     //this.filledProperties[fieldName];
     let prop = metaProps[endpoint].find(
       (prop) => prop.property === propertyName
@@ -41,8 +41,8 @@ class PropertiesEditor extends React.Component {
         <Input
           placeholder={placeholder}
           name={propertyName}
-          value={this.props.properties[propertyName]}
-          onChange={this.props.onChange}
+          value={props.properties[propertyName]}
+          onChange={props.onChange}
           className={classes.input}
           inputProps={{
             "aria-label": "description",
@@ -55,25 +55,22 @@ class PropertiesEditor extends React.Component {
     );
   }
 
-  generateProperties() {
+  const generateProperties = ()  =>{
     const fields = [];
     
-    for (const property in this.props.properties) {
+    for (const property in props.properties) {
       fields.push(
-        this.generateField(
+        generateField(
           property,
           null,
-          this.props.metaProps,
-          this.props.endpoint
+          props.metaProps,
+          props.endpoint
         )
       );
     }
     return fields;
   }
-
-  render() {
-    return this.generateProperties();
-  }
+  return generateProperties();  
 }
 
 export default withStyles(styles)(PropertiesEditor);
