@@ -85,7 +85,7 @@ const styles = () => ( {
 } );
 
 const AgentGUI = ( props ) => {
-  let child = React.createRef();
+  var child = React.createRef();
   const [state, setState] = useState( {
     consoleWidth: 6,
     hidden: false,
@@ -95,7 +95,7 @@ const AgentGUI = ( props ) => {
     selectedNodeIndex: null,
   } );
   // Empty when hosted using flask
-  let agentEndpoint = "";
+  // var agentEndpoint = "";
 
   useEffect( () => {
     const getData = async () => {
@@ -142,7 +142,7 @@ const AgentGUI = ( props ) => {
     } );
   }
 
-  async const submitServerURL = ( e ) => {
+  const submitServerURL = async ( e ) => {
     await startAgent( state.serverURL );
     const hydradoc = await getHydraDoc();
     setState( {

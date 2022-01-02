@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Input from "@material-ui/core/Input";
@@ -7,7 +7,7 @@ import GuiTheme from "../../app/gui-theme";
 import { withStyles } from "@material-ui/styles";
 import ReactJson from "react-json-view";
 // Custom imports
-import { Scrollbars } from "react-custom-scrollbars";
+// import { Scrollbars } from "react-custom-scrollbars";
 
 // Local components
 import EndpointsButtons from "./endpoints-buttons/EndpointsButtons";
@@ -19,8 +19,8 @@ import {
   setInLocalStorage,
   getFromLocalStorage,
   jsonStringifyReplacer,
-  extractPageNumberFromString,
 } from "../../utils/utils";
+import {extractPageNumberFromString} from "../../utils/utils";
 // Service Import
 import getRawOutput from "../../services/send-command.js";
 // Custom Css modification to Raw Command Input field
@@ -163,10 +163,10 @@ const styles = ( theme ) => ( {
 } );
 
 const HydraConsole = ( props ) => {
-  let child = React.createRef();
+  var child = React.createRef();
   let endpoints = null;
   const classesMapping = [];
-  let agentEndpoint = "";
+  // var agentEndpoint = "";
 
   // util variables
   let previousEndpointIndex = 0; // for managing the state and local storage
@@ -185,7 +185,7 @@ const HydraConsole = ( props ) => {
   // Initializing empty array with all properties in the ApiDoc
   let classesProperties = {};
   let resourcesIDs = {};
-  let classesPropertiesWithMetaData = {};
+  const classesPropertiesWithMetaData = {};
   for ( const auxClass in classesMapping ) {
     classesProperties[classesMapping[auxClass]["@id"]] = {};
     classesPropertiesWithMetaData[auxClass] = [];
@@ -250,14 +250,12 @@ const HydraConsole = ( props ) => {
   }
 
   function selectEndpoint( endpointIndex, op = "GET" ) {
-    const selectedEndpoint = state.endpoints[endpointIndex];
-    selectedEndpoint = selectedEndpoint;
+    var selectedEndpoint = state.endpoints[endpointIndex];
     child.current.selectButton( endpointIndex );
     const temporaryEndpoint = selectedEndpoint.property.range.replace(
       "Collection",
       ""
     );
-    temporaryEndpoint = temporaryEndpoint;
 
     const selectedHydraClass = state.hydraClasses[temporaryEndpoint];
     const operations = selectedHydraClass.supportedOperation;
@@ -325,17 +323,17 @@ const HydraConsole = ( props ) => {
     } );
   }
 
-  const setResourceID = ( name, value ) => {
-    // This is a utility method to set the Resource Field id from clicking on the output link in output console
-    getURL = true;
-    const resourcesIDs = Object.assign( {}, state.resourcesIDs );
-    resourcesIDs[name]["ResourceID"] = value.split( "/" ).pop();
-    setInLocalStorage( "resourceIDs", JSON.stringify( resourcesIDs ) );
-    setState( {
-      resourcesIDs: resourcesIDs,
-    } );
-  }
-  async const sendCommand = ( page ) => {
+  // var setResourceID = ( name, value ) => {
+  //   // This is a utility method to set the Resource Field id from clicking on the output link in output console
+  //   getURL = true;
+  //   const resourcesIDs = Object.assign( {}, state.resourcesIDs );
+  //   resourcesIDs[name]["ResourceID"] = value.split( "/" ).pop();
+  //   setInLocalStorage( "resourceIDs", JSON.stringify( resourcesIDs ) );
+  //   setState( {
+  //     resourcesIDs: resourcesIDs,
+  //   } );
+  // }
+  const sendCommand = async ( page ) => {
     const properties = state.properties[temporaryEndpoint];
     const filteredProperties = {};
     for ( const property in properties ) {
@@ -448,19 +446,16 @@ const HydraConsole = ( props ) => {
   const selectedEndpoint = state.endpoints[
     state.selectedEndpointIndex
   ];
-  selectedEndpoint = selectedEndpoint;
 
   const temporaryEndpoint = selectedEndpoint.property.range.replace(
     "Collection",
     ""
   );
-  temporaryEndpoint = temporaryEndpoint;
 
   const selectedHydraClass = state.hydraClasses[temporaryEndpoint];
 
   const selectedOperation =
     selectedHydraClass.supportedOperation[state.selectedOperationIndex];
-  selectedOperation = selectedOperation;
 
   const stringProps = JSON.stringify(
     state.properties[temporaryEndpoint],
