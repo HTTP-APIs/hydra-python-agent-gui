@@ -16,7 +16,7 @@ const styles = (theme) => ({
       justifyContent: "start",
       borderBottom: "1px solid #E4E4E4",
       display: "flex",
-      justifyContent: "space-between",
+      // justifyContent: "space-between",
     },
   },
   endpointSelectedButton: {
@@ -35,12 +35,11 @@ const styles = (theme) => ({
 });
 
 function EndpointsButtons(props) {
-  const buttons = [];
+  const [selectedButton, setSelectedButton] = useState(0);
+  const [buttons, setButtons] = useState([]);
   props.endpoints.map().forEach((endpoint) => {
     buttons[endpoint] = false;
   });
-  const [selectedButton, setSelectedButton] = useState(0);
-  const [buttons, setButtons] = useState([]);
 
   const selectButton = (clickedButton) => {
     const updatedButtons = buttons.slice();
@@ -57,9 +56,9 @@ function EndpointsButtons(props) {
     const buttons = endpointsArray.map((currProperty, index) => {
       const labelEndpoint = props.endpoints[currProperty].property.label;
       //color={this.state.buttons[currProperty] ? "secondary" : "default"}
-      const selectedClass = buttons[currProperty]
-        ? classes.active
-        : classes.endpointButton;
+      // const selectedClass = buttons[currProperty]
+      //   ? classes.active
+      //   : classes.endpointButton;
       return (
         <Button
           key={currProperty}
@@ -68,7 +67,7 @@ function EndpointsButtons(props) {
           }`}
           onClick={(e) => {
             selectButton(currProperty);
-            selectEndpoint(currProperty);
+            // selectEndpoint(currProperty);
           }}
         >
           {labelEndpoint}
