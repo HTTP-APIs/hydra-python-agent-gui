@@ -1,5 +1,4 @@
 import React from "react";
-import { withStyles } from "@material-ui/styles";
 import { makeStyles } from "@material-ui/core";
 const useStyles = makeStyles({
   page: {
@@ -13,7 +12,7 @@ const useStyles = makeStyles({
   },
 });
 
-const  Pagination=({ last_page, paginate })  =>{
+const Pagination = ({ last_page, paginate }) => {
   const classes = useStyles();
   const paged = [];
   if (last_page > 1) {
@@ -27,6 +26,6 @@ const  Pagination=({ last_page, paginate })  =>{
   }
 
   return paged;
-}
+};
 
 export default Pagination;
