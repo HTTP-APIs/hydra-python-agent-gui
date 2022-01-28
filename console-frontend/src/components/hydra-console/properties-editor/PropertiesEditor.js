@@ -23,10 +23,15 @@ const styles = (theme) => ({
 });
 
 function PropertiesEditor(props) {
-  const generateField = (propertyName, placeholder = null, metaProps, endpoint) => {
+  const generateField = (
+    propertyName,
+    placeholder = null,
+    metaProps,
+    endpoint
+  ) => {
     const { classes } = props;
     //this.filledProperties[fieldName];
-    let prop = metaProps[endpoint].find(
+    const prop = metaProps[endpoint].find(
       (prop) => prop.property === propertyName
     );
     return (
@@ -53,24 +58,19 @@ function PropertiesEditor(props) {
         </small>
       </Grid>
     );
-  }
+  };
 
-  const generateProperties = ()  =>{
+  const generateProperties = () => {
     const fields = [];
-    
+
     for (const property in props.properties) {
       fields.push(
-        generateField(
-          property,
-          null,
-          props.metaProps,
-          props.endpoint
-        )
+        generateField(property, null, props.metaProps, props.endpoint)
       );
     }
     return fields;
-  }
-  return generateProperties();  
+  };
+  return generateProperties();
 }
 
 export default withStyles(styles)(PropertiesEditor);
