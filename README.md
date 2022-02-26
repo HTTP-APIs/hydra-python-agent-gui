@@ -19,6 +19,9 @@ The Agent uses a Redis local server as a caching layer. That said, it's necessar
 ```
 sudo ./redis_setup.sh # <- Might be necessary to uso sudo
 ```
+### Running hydrus server
+Since this is an API Client, we need an appropriate hydrus server to query to. To setup a localhost follow the instructions at https://github.com/HTTP-APIs/hydrus#demo. 
+
 
 ### Running the GUI
 If you've installed the Requirements and have the proper Redis running you can simply:
