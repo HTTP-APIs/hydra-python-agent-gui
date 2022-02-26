@@ -7,7 +7,7 @@ This is a GUI for the [Hydra Ecosystem's Agent](https://github.com/HTTP-APIs/hyd
 It's recommended that you use venv(virtual environment):
 
 ```
-apt-get install python3-venv # If not installed
+sudo apt-get install python3-venv # If not installed
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
