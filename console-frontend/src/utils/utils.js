@@ -32,7 +32,7 @@ const extractPageNumberFromString = (str) => {
   return str[indexPage + 5];
 }
 
-export default {
+export {
   isArray,
   isString,
   isObject,
